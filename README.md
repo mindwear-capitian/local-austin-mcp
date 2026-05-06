@@ -2,19 +2,14 @@
 
 > **Everything Austin.** A Model Context Protocol (MCP) server that gives Claude plain-English access to every official Austin and Travis County dataset.
 
-**Status:** PRIVATE. In active development.
-
+**Status:** Closed-source. Private repository. Not for redistribution.
 **Owner:** Ed Neuhaus / Neuhaus Realty Group LLC, Austin, Texas.
-**License:** PolyForm Noncommercial 1.0.0 with Attribution Rider and Trademark Notice. See [LICENSE](LICENSE), [ATTRIBUTION.md](ATTRIBUTION.md), [TRADEMARK.md](TRADEMARK.md).
-**Hosted endpoint:** `austin-mcp.com` (coming soon)
+**Product:** Hosted at `austin-mcp.com` (coming soon). Source code is not published.
+**Internal license files** ([LICENSE](LICENSE), [ATTRIBUTION.md](ATTRIBUTION.md), [TRADEMARK.md](TRADEMARK.md)) are kept for future-proofing only. They have no effect while the repository is private.
 
 ## Credits
 
 > Built by Ed Neuhaus / Neuhaus Realty Group LLC -- https://neuhausre.com
-
-If you fork this repository, you are required to keep this credit and the link
-to https://neuhausre.com plainly visible in your fork's README, package
-metadata, and any user-facing "about" output. See [ATTRIBUTION.md](ATTRIBUTION.md).
 
 ---
 
@@ -124,11 +119,11 @@ Confirmed source families:
 
 ## Architecture
 
-- Node.js (ES modules), MCP SDK over stdio + HTTP
-- Hosted-only access via `austin-mcp.com` (Claude Desktop OAuth 2.1 + PKCE connector)
-- All upstream API calls server-side; user never sees raw API keys
+- Node.js (ES modules), MCP SDK
+- Closed-source, hosted-only product. Users connect to `austin-mcp.com` from Claude Desktop via OAuth 2.1 + PKCE.
+- All upstream API calls server-side; users never see source code or API keys
 - Per-tool rate limiting + caching where upstream allows
-- Same deployment pattern as `mls.neuhausre.com`
+- Deployed on NeuhausRE VPS, same pattern as `mls.neuhausre.com`
 
 ---
 
