@@ -191,6 +191,69 @@ try {
     throw new Error("Attribution tag missing from travis_tax_office output");
   }
 
+  // Call mud_pid_lookup
+  send({
+    jsonrpc: "2.0",
+    id: 11,
+    method: "tools/call",
+    params: { name: "mud_pid_lookup", arguments: { address: "9501 san lucas" } },
+  });
+  const mudRes = await expect(11, "mud_pid_lookup", 30000);
+  const mudText = mudRes.result?.content?.[0]?.text ?? "";
+  console.log("\nmud_pid_lookup/9501 san lucas first 400:");
+  console.log(mudText.slice(0, 400));
+  if (!mudText.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from mud_pid_lookup output");
+  }
+
+  // Call fema_flood
+  send({
+    jsonrpc: "2.0",
+    id: 12,
+    method: "tools/call",
+    params: { name: "fema_flood", arguments: { address: "9501 San Lucas Dr Austin TX" } },
+  });
+  const floodRes = await expect(12, "fema_flood", 20000);
+  const floodText = floodRes.result?.content?.[0]?.text ?? "";
+  console.log("\nfema_flood/9501 san lucas first 400:");
+  console.log(floodText.slice(0, 400));
+  if (!floodText.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from fema_flood output");
+  }
+
+  // Call tea_schools
+  send({
+    jsonrpc: "2.0",
+    id: 13,
+    method: "tools/call",
+    params: { name: "tea_schools", arguments: { district: "Eanes", limit: 5 } },
+  });
+  const teaRes = await expect(13, "tea_schools", 20000);
+  const teaText = teaRes.result?.content?.[0]?.text ?? "";
+  console.log("\ntea_schools/Eanes first 400:");
+  console.log(teaText.slice(0, 400));
+  if (!teaText.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from tea_schools output");
+  }
+
+  // Call austin_property_360 (slow -- 8 parallel upstream calls)
+  send({
+    jsonrpc: "2.0",
+    id: 14,
+    method: "tools/call",
+    params: { name: "austin_property_360", arguments: { address: "9501 San Lucas Dr Austin TX" } },
+  });
+  const p360Res = await expect(14, "austin_property_360", 60000);
+  const p360Text = p360Res.result?.content?.[0]?.text ?? "";
+  console.log("\naustin_property_360/9501 san lucas first 600:");
+  console.log(p360Text.slice(0, 600));
+  if (!p360Text.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from austin_property_360 output");
+  }
+  if (!p360Text.includes("## 1.") || !p360Text.includes("## 8.")) {
+    throw new Error("austin_property_360 missing required sections");
+  }
+
   console.log("\nALL OK");
   server.kill();
   process.exit(0);

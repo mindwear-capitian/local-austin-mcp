@@ -20,8 +20,12 @@ import { austinPermits } from "./tools/property/austin-permits.js";
 import { austinCodeCases } from "./tools/property/austin-code-cases.js";
 import { austinZoning } from "./tools/property/austin-zoning.js";
 import { travisTax } from "./tools/property/travis-tax.js";
+import { mudPidLookup } from "./tools/property/mud-pid-lookup.js";
+import { femaFlood } from "./tools/property/fema-flood.js";
 import { austin311 } from "./tools/civic/austin-311.js";
 import { austinCrime } from "./tools/civic/austin-crime.js";
+import { teaSchools } from "./tools/civic/tea-schools.js";
+import { austinProperty360 } from "./tools/composed/austin-property-360.js";
 
 const ALL_TOOLS = [
   aboutTool,
@@ -30,8 +34,12 @@ const ALL_TOOLS = [
   austinCodeCases,
   austinZoning,
   travisTax,
+  mudPidLookup,
+  femaFlood,
   austin311,
   austinCrime,
+  teaSchools,
+  austinProperty360,
 ];
 
 async function main() {
