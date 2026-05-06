@@ -19,8 +19,9 @@ import { travisCadSearch } from "./tools/property/travis-cad.js";
 import { austinPermits } from "./tools/property/austin-permits.js";
 import { austinCodeCases } from "./tools/property/austin-code-cases.js";
 import { austin311 } from "./tools/civic/austin-311.js";
+import { austinCrime } from "./tools/civic/austin-crime.js";
 
-const ALL_TOOLS = [aboutTool, travisCadSearch, austinPermits, austinCodeCases, austin311];
+const ALL_TOOLS = [aboutTool, travisCadSearch, austinPermits, austinCodeCases, austin311, austinCrime];
 
 async function main() {
   const server = new McpServer(

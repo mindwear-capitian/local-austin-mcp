@@ -146,6 +146,21 @@ try {
     throw new Error("Attribution tag missing from austin_311 output");
   }
 
+  // Call austin_crime
+  send({
+    jsonrpc: "2.0",
+    id: 8,
+    method: "tools/call",
+    params: { name: "austin_crime", arguments: { council_district: 9, limit: 3 } },
+  });
+  const crimeRes = await expect(8, "austin_crime", 15000);
+  const crimeText = crimeRes.result?.content?.[0]?.text ?? "";
+  console.log("\naustin_crime/District 9 first 300:");
+  console.log(crimeText.slice(0, 300));
+  if (!crimeText.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from austin_crime output");
+  }
+
   console.log("\nALL OK");
   server.kill();
   process.exit(0);
