@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+/**
+ * Local Austin MCP -- entry point.
+ *
+ * Built by Ed Neuhaus / Neuhaus Realty Group LLC -- https://neuhausre.com
+ *
+ * License: PolyForm Noncommercial 1.0.0 with Attribution Rider and Trademark
+ * Notice. See LICENSE in the repository root. Forks must preserve attribution.
+ */
+
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+import { NAME, VERSION } from "./lib/version.js";
+import { ATTRIBUTION_TEXT } from "./lib/attribution.js";
+
+import { aboutTool } from "./tools/about.js";
+import { travisCadSearch } from "./tools/property/travis-cad.js";
+
+const ALL_TOOLS = [aboutTool, travisCadSearch];
+
+async function main() {
+  const server = new McpServer(
+    {
+      name: NAME,
+      version: VERSION,
+      description: `Local Austin MCP -- ${ATTRIBUTION_TEXT}`,
+    },
+    {
+      capabilities: { tools: {} },
+    }
+  );
+
+  for (const tool of ALL_TOOLS) {
+    server.registerTool(
+      tool.name,
+      {
+        description: tool.description,
+        inputSchema: tool.inputSchema,
+      },
+      tool.handler
+    );
+  }
+
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+
+  // Log to stderr so stdout stays clean for MCP framing.
+  process.stderr.write(
+    `[local-austin-mcp] v${VERSION} ready over stdio. ${ALL_TOOLS.length} tools registered.\n`
+  );
+}
+
+main().catch((err) => {
+  process.stderr.write(`[local-austin-mcp] fatal: ${err?.stack ?? err}\n`);
+  process.exit(1);
+});

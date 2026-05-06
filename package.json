@@ -7,7 +7,9 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "test": "node test/mcp-handshake.js",
+    "test:smoke": "node test/smoke-tcad.js"
   },
   "keywords": [
     "mcp",
@@ -21,5 +23,9 @@
   "license": "SEE LICENSE IN LICENSE",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
   }
 }
