@@ -1,70 +1,236 @@
-PROPRIETARY SOFTWARE LICENSE
 Copyright (c) 2026 Ed Neuhaus / Neuhaus Realty Group LLC.
-All rights reserved.
+All rights reserved except as expressly granted below.
 
-NOTICE
-======
+This software is licensed under the **PolyForm Noncommercial License 1.0.0**,
+modified by an Attribution Rider and a Trademark Notice that are part of, and
+conditions to, the license.
 
-This software and all associated source code, documentation, and assets
-(collectively, the "Software") are the exclusive property of Ed Neuhaus and
-Neuhaus Realty Group LLC ("the Owner").
+================================================================================
 
-NO LICENSE IS GRANTED to any person or entity to use, copy, modify, merge,
-publish, distribute, sublicense, fork, mirror, or sell copies of the Software,
-in whole or in part, by any means, except as expressly authorized in writing
-by the Owner.
+REQUIRED NOTICE
+===============
 
-The Software is intended to be accessed solely via the official hosted endpoint
-operated by the Owner. Access to that endpoint is governed by separate Terms of
-Service published at the endpoint URL.
+> Required Notice: Built by Ed Neuhaus / Neuhaus Realty Group LLC --
+> https://neuhausre.com
 
-PROHIBITED ACTIONS
-==================
+This Required Notice MUST be reproduced in any copy, fork, modification, or
+distribution of the software, in the locations described in the Attribution
+Rider below.
 
-Without the prior written permission of the Owner, you may NOT:
+================================================================================
 
-  1. Copy, reproduce, or duplicate any part of the Software.
-  2. Fork, mirror, redistribute, or republish the Software.
-  3. Modify, adapt, translate, or create derivative works of the Software.
-  4. Reverse engineer, decompile, or disassemble the Software.
-  5. Use the Software, in whole or in part, for any commercial purpose.
-  6. Use the Software to operate a competing or substantially similar service.
-  7. Remove or alter any proprietary notices contained in the Software.
+PolyForm Noncommercial License 1.0.0
+====================================
 
-VIEWING THE SOURCE
-==================
+<https://polyformproject.org/licenses/noncommercial/1.0.0>
 
-If access to the source repository has been granted to you (for example, as a
-collaborator, employee, contractor, auditor, or evaluator), such access does
-not constitute a license to use, copy, or distribute the Software. Your access
-is limited to viewing and to any specific tasks expressly authorized in
-writing by the Owner.
+## Acceptance
 
-NO WARRANTY
-===========
+In order to get any license under these terms, you must agree
+to them as both strict obligations and conditions to all
+your licenses.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-OWNER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
-ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+## Copyright License
 
-ENFORCEMENT
-===========
+The licensor grants you a copyright license for the
+software to do everything you might do with the software
+that would otherwise infringe the licensor's copyright
+in it for any permitted purpose.  However, you may
+only distribute the software according to [Distribution
+License](#distribution-license) and make changes or new works
+based on the software according to [Changes and New Works
+License](#changes-and-new-works-license).
 
-Unauthorized use, reproduction, or distribution of the Software is strictly
-prohibited and may result in civil and criminal penalties under applicable
-copyright, trade secret, and computer fraud laws. The Owner reserves all
-rights and remedies available at law and in equity.
+## Distribution License
+
+The licensor grants you an additional copyright license
+to distribute copies of the software.  Your license
+to distribute covers distributing the software with
+changes and new works permitted by [Changes and New Works
+License](#changes-and-new-works-license).
+
+## Notices
+
+You must ensure that anyone who gets a copy of any part of
+the software from you also gets a copy of these terms or the
+URL for them above, as well as copies of any plain-text lines
+beginning with `Required Notice:` that the licensor provided
+with the software.  For example:
+
+> Required Notice: Built by Ed Neuhaus / Neuhaus Realty Group LLC --
+> https://neuhausre.com
+
+## Changes and New Works License
+
+The licensor grants you an additional copyright license to
+make changes and new works based on the software for any
+permitted purpose.
+
+## Patent License
+
+The licensor grants you a patent license for the software that
+covers patent claims the licensor can license, or becomes able
+to license, that you would infringe by using the software.
+
+## Noncommercial Purposes
+
+Any noncommercial purpose is a permitted purpose.
+
+## Personal Uses
+
+Personal use for research, experiment, and testing for
+the benefit of public knowledge, personal study, private
+entertainment, hobby projects, amateur pursuits, or religious
+observance, without any anticipated commercial application,
+is use for a permitted purpose.
+
+## Noncommercial Organizations
+
+Use by any charitable organization, educational institution,
+public research organization, public safety or health
+organization, environmental protection organization,
+or government institution is use for a permitted purpose
+regardless of the source of funding or obligations resulting
+from the funding.
+
+## Fair Use
+
+You may have "fair use" rights for the software under the
+law. These terms do not limit them.
+
+## No Other Rights
+
+These terms do not allow you to sublicense or transfer any of
+your licenses to anyone else, or prevent the licensor from
+granting licenses to anyone else.  These terms do not imply
+any other licenses.
+
+## Patent Defense
+
+If you make any written claim that the software infringes or
+contributes to infringement of any patent, your patent license
+for the software granted under these terms ends immediately. If
+your company makes such a claim, your patent license ends
+immediately for work on behalf of your company.
+
+## Violations
+
+The first time you are notified in writing that you have
+violated any of these terms, or done anything with the software
+not covered by your licenses, your licenses can nonetheless
+continue if you come into full compliance with these terms,
+and take practical steps to correct past violations, within
+32 days of receiving notice.  Otherwise, all your licenses
+end immediately.
+
+## No Liability
+
+***As far as the law allows, the software comes as is, without
+any warranty or condition, and the licensor will not be liable
+to you for any damages arising out of these terms or the use
+or nature of the software, under any kind of legal claim.***
+
+## Definitions
+
+The **licensor** is the individual or entity offering these
+terms, and the **software** is the software the licensor makes
+available under these terms.
+
+**You** refers to the individual or entity agreeing to these
+terms.
+
+**Your company** is any legal entity, sole proprietorship,
+or other kind of organization that you work for, plus all
+organizations that have control over, are under the control of,
+or are under common control with that organization.  **Control**
+means ownership of substantially all the assets of an entity,
+or the power to direct its management and policies by vote,
+contract, or otherwise.  Control can be direct or indirect.
+
+**Your licenses** are all the licenses granted to you for the
+software under these terms.
+
+**Use** means anything you do with the software requiring one
+of your licenses.
+
+================================================================================
+
+ATTRIBUTION RIDER
+=================
+
+This Attribution Rider is an additional condition of the license. It applies
+to all copies, forks, modifications, derivative works, and distributions of
+the software (each a "Derivative"). Failure to comply terminates your license
+under the same Violations procedure described above.
+
+You must reproduce the Required Notice (the "Attribution") **unmodified** and
+**plainly visible to end users** in ALL of the following locations of any
+Derivative:
+
+  (a) The file `ATTRIBUTION.md` at the repository root, kept intact.
+
+  (b) The README of the Derivative, in a section titled "Credits",
+      "Acknowledgements", or equivalent, appearing within the first 500 words.
+
+  (c) The package metadata `author` field (or equivalent) of any
+      package, module, container, or distribution artifact.
+
+  (d) Any user-facing "about", "help", "/about", "version", or equivalent
+      output produced by the Derivative when invoked by an end user or by
+      any AI agent or MCP client.
+
+  (e) Any documentation, marketing, sales, or descriptive material
+      accompanying the Derivative.
+
+The Attribution text and the URL `https://neuhausre.com` may NOT be removed,
+shortened, altered, obscured, replaced with a non-functional link, or rendered
+invisible to end users. Stylistic formatting (CSS, color, font, layout) is
+permitted so long as the text and link remain plainly legible and the link
+remains functional.
+
+The Attribution may not be paired with disclaimers that contradict it (for
+example, "this fork is unaffiliated" is allowed, but "this software was not
+built by Ed Neuhaus" is not).
+
+================================================================================
+
+TRADEMARK NOTICE
+================
+
+The names "Local Austin MCP", "Austin MCP", "Neuhaus", "Neuhaus Realty Group",
+the Neuhaus Realty Group logo, and any associated word marks, logos, or
+service marks (collectively, the "Marks") are trademarks of Ed Neuhaus and
+Neuhaus Realty Group LLC.
+
+The license granted in this LICENSE does NOT include any right to use the
+Marks. Specifically, in any Derivative you may NOT:
+
+  (a) Use the Marks in the name of the Derivative, the name of any product,
+      service, package, container, repository, or domain associated with the
+      Derivative.
+
+  (b) Use the Marks in a way that suggests endorsement, sponsorship,
+      affiliation, partnership, or any official relationship with Ed Neuhaus
+      or Neuhaus Realty Group LLC.
+
+  (c) Use the Marks in advertising, marketing, or promotional material for
+      the Derivative.
+
+You MAY refer to the Marks for purposes of factual attribution as required
+by the Attribution Rider above (for example, stating that the Derivative is
+"based on Local Austin MCP by Ed Neuhaus"), and for ordinary descriptive
+references that nominative fair use permits.
+
+================================================================================
 
 CONTACT
 =======
 
-For licensing inquiries, partnership requests, or written authorization,
-contact:
+For commercial licensing, partnership inquiries, or written authorization to
+use the Marks beyond nominative fair use:
 
     Ed Neuhaus
     Neuhaus Realty Group LLC
     Austin, Texas
     Ed@NeuhausRE.com
+    https://neuhausre.com

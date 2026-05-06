@@ -5,8 +5,16 @@
 **Status:** PRIVATE. In active development.
 
 **Owner:** Ed Neuhaus / Neuhaus Realty Group LLC, Austin, Texas.
-**License:** Proprietary. All rights reserved. See [LICENSE](LICENSE).
+**License:** PolyForm Noncommercial 1.0.0 with Attribution Rider and Trademark Notice. See [LICENSE](LICENSE), [ATTRIBUTION.md](ATTRIBUTION.md), [TRADEMARK.md](TRADEMARK.md).
 **Hosted endpoint:** `austin-mcp.com` (coming soon)
+
+## Credits
+
+> Built by Ed Neuhaus / Neuhaus Realty Group LLC -- https://neuhausre.com
+
+If you fork this repository, you are required to keep this credit and the link
+to https://neuhausre.com plainly visible in your fork's README, package
+metadata, and any user-facing "about" output. See [ATTRIBUTION.md](ATTRIBUTION.md).
 
 ---
 
