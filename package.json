@@ -1,6 +1,6 @@
 {
   "name": "local-austin-mcp",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
   "description": "MCP server giving Claude plain-English access to every official Austin and Travis County dataset.",
   "main": "index.js",
@@ -14,7 +14,9 @@
     "test:smoke:code": "node test/smoke-code-cases.js",
     "test:smoke:311": "node test/smoke-311.js",
     "test:smoke:crime": "node test/smoke-crime.js",
-    "test:smoke": "node test/smoke-tcad.js && node test/smoke-permits.js && node test/smoke-code-cases.js && node test/smoke-311.js && node test/smoke-crime.js"
+    "test:smoke:zoning": "node test/smoke-zoning.js",
+    "test:smoke:tax": "node test/smoke-tax.js",
+    "test:smoke": "node test/smoke-tcad.js && node test/smoke-permits.js && node test/smoke-code-cases.js && node test/smoke-311.js && node test/smoke-crime.js && node test/smoke-zoning.js && node test/smoke-tax.js"
   },
   "keywords": [
     "mcp",

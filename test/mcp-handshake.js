@@ -161,6 +161,36 @@ try {
     throw new Error("Attribution tag missing from austin_crime output");
   }
 
+  // Call austin_zoning
+  send({
+    jsonrpc: "2.0",
+    id: 9,
+    method: "tools/call",
+    params: { name: "austin_zoning", arguments: { address: "5201 Airport" } },
+  });
+  const zoneRes = await expect(9, "austin_zoning", 15000);
+  const zoneText = zoneRes.result?.content?.[0]?.text ?? "";
+  console.log("\naustin_zoning/5201 Airport first 300:");
+  console.log(zoneText.slice(0, 300));
+  if (!zoneText.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from austin_zoning output");
+  }
+
+  // Call travis_tax_office
+  send({
+    jsonrpc: "2.0",
+    id: 10,
+    method: "tools/call",
+    params: { name: "travis_tax_office", arguments: { address: "9501 san lucas" } },
+  });
+  const taxRes = await expect(10, "travis_tax_office", 30000);
+  const taxText = taxRes.result?.content?.[0]?.text ?? "";
+  console.log("\ntravis_tax_office/9501 san lucas first 400:");
+  console.log(taxText.slice(0, 400));
+  if (!taxText.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from travis_tax_office output");
+  }
+
   console.log("\nALL OK");
   server.kill();
   process.exit(0);

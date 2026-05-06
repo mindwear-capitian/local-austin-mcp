@@ -130,10 +130,16 @@ Confirmed source families:
 ## Status
 
 **Phase 0: Repo + License + Plan** ✅
-**Phase 1: Property core** -- in progress
-**Phase 2: Civic + Public** -- planned
+**Phase 1: Property core** -- in progress (7/10 tools live)
+**Phase 2: Civic + Public** -- 2/N live
 **Phase 3: Daily Life + Transit** -- planned
 **Phase 4: Visitor + Environment** -- planned
+
+### Deferred
+
+- **`travis_county_clerk_deeds`** -- requires browser automation against a JavaScript-rendered ASP.NET portal (tccsearch.org). Will integrate via the existing `/srv/playwright-scraper` service on NeuhausRE VPS in a later phase rather than spawning a browser per MCP call.
+- **`mud_pid_lookup`** -- planned for Phase 1 once a stable Comptroller API path is confirmed.
+- **`fema_flood`** -- planned for Phase 1 (FEMA NFHL ArcGIS).
 
 ---
 
