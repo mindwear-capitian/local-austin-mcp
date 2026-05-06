@@ -1,0 +1,25 @@
+{
+  "name": "local-austin-mcp",
+  "version": "0.0.1",
+  "private": true,
+  "description": "MCP server giving Claude plain-English access to every official Austin and Travis County dataset.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [
+    "mcp",
+    "austin",
+    "travis-county",
+    "claude",
+    "civic-data",
+    "real-estate"
+  ],
+  "author": "Ed Neuhaus / Neuhaus Realty Group LLC",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=18"
+  }
+}
