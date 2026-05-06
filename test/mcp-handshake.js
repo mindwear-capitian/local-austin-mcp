@@ -131,6 +131,21 @@ try {
     throw new Error("Attribution tag missing from austin_code_cases output");
   }
 
+  // Call austin_311 (use request_type filter -- queries are fast that way)
+  send({
+    jsonrpc: "2.0",
+    id: 7,
+    method: "tools/call",
+    params: { name: "austin_311", arguments: { request_type: "pothole", limit: 3 } },
+  });
+  const r311 = await expect(7, "austin_311", 45000);
+  const r311Text = r311.result?.content?.[0]?.text ?? "";
+  console.log("\naustin_311/pothole first 300:");
+  console.log(r311Text.slice(0, 300));
+  if (!r311Text.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from austin_311 output");
+  }
+
   console.log("\nALL OK");
   server.kill();
   process.exit(0);
