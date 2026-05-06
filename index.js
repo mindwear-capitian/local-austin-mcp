@@ -16,8 +16,9 @@ import { ATTRIBUTION_TEXT } from "./lib/attribution.js";
 
 import { aboutTool } from "./tools/about.js";
 import { travisCadSearch } from "./tools/property/travis-cad.js";
+import { austinPermits } from "./tools/property/austin-permits.js";
 
-const ALL_TOOLS = [aboutTool, travisCadSearch];
+const ALL_TOOLS = [aboutTool, travisCadSearch, austinPermits];
 
 async function main() {
   const server = new McpServer(

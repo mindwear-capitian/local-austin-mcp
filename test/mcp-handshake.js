@@ -98,7 +98,22 @@ try {
   console.log("\ntravis_cad_search/9501 san lucas first 300:");
   console.log(cadText.slice(0, 300));
   if (!cadText.includes("neuhausre.com")) {
-    throw new Error("Attribution tag missing from tool output");
+    throw new Error("Attribution tag missing from travis_cad_search output");
+  }
+
+  // Call austin_permits
+  send({
+    jsonrpc: "2.0",
+    id: 5,
+    method: "tools/call",
+    params: { name: "austin_permits", arguments: { address: "2512 tremolo pass", limit: 5 } },
+  });
+  const permitRes = await expect(5, "austin_permits", 15000);
+  const permitText = permitRes.result?.content?.[0]?.text ?? "";
+  console.log("\naustin_permits/2512 tremolo pass first 300:");
+  console.log(permitText.slice(0, 300));
+  if (!permitText.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from austin_permits output");
   }
 
   console.log("\nALL OK");
