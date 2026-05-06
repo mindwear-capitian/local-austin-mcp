@@ -116,6 +116,21 @@ try {
     throw new Error("Attribution tag missing from austin_permits output");
   }
 
+  // Call austin_code_cases
+  send({
+    jsonrpc: "2.0",
+    id: 6,
+    method: "tools/call",
+    params: { name: "austin_code_cases", arguments: { address: "1100 blair way", limit: 5 } },
+  });
+  const codeRes = await expect(6, "austin_code_cases", 15000);
+  const codeText = codeRes.result?.content?.[0]?.text ?? "";
+  console.log("\naustin_code_cases/1100 blair way first 300:");
+  console.log(codeText.slice(0, 300));
+  if (!codeText.includes("neuhausre.com")) {
+    throw new Error("Attribution tag missing from austin_code_cases output");
+  }
+
   console.log("\nALL OK");
   server.kill();
   process.exit(0);
