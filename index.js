@@ -16,6 +16,8 @@ import { ATTRIBUTION_TEXT } from "./lib/attribution.js";
 
 import { aboutTool } from "./tools/about.js";
 import { travisCadSearch } from "./tools/property/travis-cad.js";
+import { williamsonCadSearch } from "./tools/property/williamson-cad.js";
+import { haysCadSearch } from "./tools/property/hays-cad.js";
 import { austinPermits } from "./tools/property/austin-permits.js";
 import { austinCodeCases } from "./tools/property/austin-code-cases.js";
 import { austinZoning } from "./tools/property/austin-zoning.js";
@@ -30,6 +32,8 @@ import { austinProperty360 } from "./tools/composed/austin-property-360.js";
 const ALL_TOOLS = [
   aboutTool,
   travisCadSearch,
+  williamsonCadSearch,
+  haysCadSearch,
   austinPermits,
   austinCodeCases,
   austinZoning,

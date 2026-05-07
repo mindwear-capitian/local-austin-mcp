@@ -1,6 +1,6 @@
 {
   "name": "local-austin-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "MCP server giving Claude plain-English access to every official Austin and Travis County dataset.",
   "main": "index.js",
@@ -20,7 +20,9 @@
     "test:smoke:mud": "node test/smoke-mud-pid.js",
     "test:smoke:flood": "node test/smoke-flood.js",
     "test:smoke:p360": "node test/smoke-property360.js",
-    "test:smoke": "node test/smoke-tcad.js && node test/smoke-permits.js && node test/smoke-code-cases.js && node test/smoke-311.js && node test/smoke-crime.js && node test/smoke-zoning.js && node test/smoke-tax.js && node test/smoke-tea.js && node test/smoke-mud-pid.js && node test/smoke-flood.js && node test/smoke-property360.js"
+    "test:smoke:wcad": "node test/smoke-wcad.js",
+    "test:smoke:hcad": "node test/smoke-hcad.js",
+    "test:smoke": "node test/smoke-tcad.js && node test/smoke-permits.js && node test/smoke-code-cases.js && node test/smoke-311.js && node test/smoke-crime.js && node test/smoke-zoning.js && node test/smoke-tax.js && node test/smoke-tea.js && node test/smoke-mud-pid.js && node test/smoke-flood.js && node test/smoke-property360.js && node test/smoke-wcad.js && node test/smoke-hcad.js"
   },
   "keywords": [
     "mcp",
