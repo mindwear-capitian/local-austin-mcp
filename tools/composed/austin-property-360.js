@@ -1,34 +1,55 @@
 import { z } from "zod";
 import { searchByAddress as tcadSearch } from "../../lib/tcad.js";
+import { searchByAddress as wcadSearch } from "../../lib/wcad.js";
+import { searchByAddress as hcadSearch } from "../../lib/hayscad.js";
 import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
 import { searchAccounts, getAccountDetail, getEntityDetail } from "../../lib/travis-tax.js";
 import { geocodeAddress, floodZoneAtPoint } from "../../lib/fema-flood.js";
+import { detectCounty, looksLikeCityOfAustin } from "../../lib/county-router.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
  * Composed property report. Fans out to every property-relevant tool in
  * parallel. Each section returns its own status so a single broken upstream
  * doesn't kill the whole report.
+ *
+ * Cross-county routing:
+ *  - CAD: detected by ZIP/city -> TCAD (Travis), WCAD (Williamson), or
+ *    HCAD (Hays). Falls back to a parallel fan-out across all three when
+ *    detection is ambiguous.
+ *  - Travis Tax Office + entity breakdown: only fires for Travis County
+ *    addresses (other counties don't yet have tax-office tools).
+ *  - City of Austin SODA datasets (permits, code, zoning, 311): only
+ *    fires for addresses inside the City of Austin proper (skipped for
+ *    Lakeway, Bee Cave, Round Rock, etc.).
  */
 
 export const austinProperty360 = {
   name: "austin_property_360",
   description: withAttributionTag(
-    "ONE-SHOT property report for any Austin / Travis County address. " +
-      "Parallel-fans out to TCAD (owner + value), Travis Tax Office " +
-      "(current bill + delinquency), Travis taxing entities (MUD / PID / " +
-      "ESD / ISD breakdown), FEMA flood zone, City of Austin permits, " +
-      "code-compliance cases, 311 service requests, and zoning. Returns " +
-      "a single markdown report. Use this for due diligence, listing prep, " +
-      "investor screening, or buyer briefings. Slower than individual tools " +
-      "(8 parallel calls including a tax-office scrape) -- expect ~10-15s."
+    "ONE-SHOT property report for any address in the Austin metro -- " +
+      "Travis, Williamson, or Hays County. Auto-detects county and " +
+      "routes to the right CAD (TCAD / WCAD / HCAD). For Travis-County " +
+      "addresses, also pulls the tax bill (delinquency check) and " +
+      "taxing-entity breakdown (MUD / PID / ESD / ISD). For City of " +
+      "Austin addresses, also pulls permits, code-compliance cases, " +
+      "311 requests, and zoning. FEMA flood zone runs for everything. " +
+      "Returns one markdown report. Use for due diligence, listing " +
+      "prep, investor screening, or buyer briefings. ~10-15s."
   ),
   inputSchema: {
     address: z
       .string()
       .min(3)
       .describe(
-        'Street address. Example: "9501 San Lucas Dr". Single-line, no city/zip ideal but tolerated. Must be in Travis County.'
+        'Street address. Example: "9501 San Lucas Dr, Austin, TX 78737". ' +
+          'Include city + zip when possible -- helps route to the right CAD.'
+      ),
+    county: z
+      .enum(["auto", "travis", "williamson", "hays"])
+      .optional()
+      .describe(
+        "Force a specific CAD. Default 'auto' detects from zip/city and falls back to fan-out search."
       ),
     permit_since_year: z
       .number()
@@ -45,30 +66,62 @@ export const austinProperty360 = {
       .optional()
       .describe("Limit 311 requests to those created on or after this year. Default = last 2 years."),
   },
-  async handler({ address, permit_since_year, sr_since_year }) {
-    const sectionPromises = {
-      cad: section(() => fetchCad(address)),
-      tax: section(() => fetchTax(address)),
-      entities: section(() => fetchEntities(address)),
-      flood: section(() => fetchFlood(address)),
-      permits: section(() => fetchPermits(address, permit_since_year)),
-      code_cases: section(() => fetchCodeCases(address)),
-      sr_311: section(() => fetchSr311(address, sr_since_year)),
-      zoning: section(() => fetchZoning(address)),
-    };
+  async handler({ address, county, permit_since_year, sr_since_year }) {
+    const requested = county && county !== "auto" ? county : null;
+    const detected = requested ?? detectCounty(address);
 
-    const sections = {};
-    for (const [k, p] of Object.entries(sectionPromises)) {
-      sections[k] = await p;
-    }
+    const cadPromise = section(() => fetchCad(address, detected));
+    // Travis-only: tax office + entity detail
+    const taxPromise =
+      detected === "travis" || detected === null
+        ? section(() => fetchTax(address))
+        : Promise.resolve(skipped(`Tax office tool only covers Travis County (detected: ${detected}).`));
+    const entitiesPromise =
+      detected === "travis" || detected === null
+        ? section(() => fetchEntities(address))
+        : Promise.resolve(skipped(`Taxing-entity breakdown only covers Travis County (detected: ${detected}).`));
 
-    const text = formatReport(address, sections);
+    const floodPromise = section(() => fetchFlood(address));
+
+    // City of Austin SODA tools: only run for Austin proper.
+    const inAustin = looksLikeCityOfAustin(address) || detected === null;
+    const permitsPromise = inAustin
+      ? section(() => fetchPermits(address, permit_since_year))
+      : Promise.resolve(skipped(`City of Austin permits skipped (address not in Austin city limits).`));
+    const codeCasesPromise = inAustin
+      ? section(() => fetchCodeCases(address))
+      : Promise.resolve(skipped(`Austin code cases skipped (not in Austin city limits).`));
+    const sr311Promise = inAustin
+      ? section(() => fetchSr311(address, sr_since_year))
+      : Promise.resolve(skipped(`Austin 311 skipped (not in Austin city limits).`));
+    const zoningPromise = inAustin
+      ? section(() => fetchZoning(address))
+      : Promise.resolve(skipped(`Austin zoning skipped (not in Austin city limits).`));
+
+    const [cad, tax, entities, flood, permits, code_cases, sr_311, zoning] =
+      await Promise.all([
+        cadPromise,
+        taxPromise,
+        entitiesPromise,
+        floodPromise,
+        permitsPromise,
+        codeCasesPromise,
+        sr311Promise,
+        zoningPromise,
+      ]);
+
+    const sections = { cad, tax, entities, flood, permits, code_cases, sr_311, zoning };
+    const text = formatReport(address, sections, { detected, requested });
     return {
       content: [
         { type: "text", text },
         {
           type: "text",
-          text: JSON.stringify({ address, sections }, null, 2),
+          text: JSON.stringify(
+            { address, county_detected: detected, county_requested: requested, sections },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -76,28 +129,64 @@ export const austinProperty360 = {
 };
 
 // ---------------------------------------------------------------------------
-// Section fetchers (each returns a normalized object, throws on failure)
+// Section fetchers
 // ---------------------------------------------------------------------------
 
-async function fetchCad(address) {
-  const rows = await tcadSearch(address, { limit: 1 });
-  if (!rows.length) return { found: false };
+async function fetchCad(address, detectedCounty) {
+  // Force a single CAD if county is known.
+  if (detectedCounty === "travis") return shapeCad(await tcadSearch(address, { limit: 1 }), "travis");
+  if (detectedCounty === "williamson") return shapeCad(await wcadSearch(address, { limit: 1 }), "williamson");
+  if (detectedCounty === "hays") return shapeCad(await hcadSearch(address, { limit: 1 }), "hays");
+
+  // Unknown county: fan out across all three in parallel and pick the
+  // first non-empty result. If multiple match, prefer Travis (largest
+  // pop), then Williamson, then Hays.
+  const [t, w, h] = await Promise.all([
+    safeArr(tcadSearch(address, { limit: 1 })),
+    safeArr(wcadSearch(address, { limit: 1 })),
+    safeArr(hcadSearch(address, { limit: 1 })),
+  ]);
+  if (t.length) return shapeCad(t, "travis");
+  if (w.length) return shapeCad(w, "williamson");
+  if (h.length) return shapeCad(h, "hays");
+  return { found: false, county: "unknown" };
+}
+
+function shapeCad(rows, county) {
+  if (!rows.length) return { found: false, county };
   const r = rows[0];
   return {
     found: true,
-    owner: r.owner,
-    site_address: r.site_address,
-    market_value: r.market_value,
-    appraised_value: r.appraised_value,
-    land_value: r.land_value,
-    improvement_value: r.improvement_value,
-    legal_acreage: r.legal_acreage,
-    zoning: r.zoning,
-    legal_description: r.legal_description,
-    property_id: r.property_id,
-    geo_id: r.geo_id,
-    detail_url: r.detail_url,
+    county,
+    owner: r.owner ?? null,
+    site_address: r.site_address ?? null,
+    market_value: r.market_value ?? null,
+    appraised_value: r.appraised_value ?? null,
+    land_value: r.land_value ?? null,
+    improvement_value: r.improvement_value ?? null,
+    legal_acreage: r.legal_acreage ?? null,
+    zoning: r.zoning ?? null,
+    legal_description: r.legal_description ?? null,
+    property_id: r.property_id ?? null,
+    geo_id: r.geo_id ?? null,
+    detail_url: r.detail_url ?? null,
+    year_built: r.year_built ?? null,
+    building_area_sqft: r.building_area_sqft ?? null,
+    school_district: r.school_district ?? null,
+    subdivision: r.subdivision ?? null,
+    yoy_change: r.yoy_change ?? null,
+    yoy_change_pct: r.yoy_change_pct ?? null,
+    source: r.source ?? null,
   };
+}
+
+async function safeArr(p) {
+  try {
+    const r = await p;
+    return Array.isArray(r) ? r : [];
+  } catch {
+    return [];
+  }
 }
 
 async function fetchTax(address) {
@@ -198,6 +287,10 @@ async function section(fn) {
   }
 }
 
+function skipped(reason) {
+  return { ok: true, value: { skipped: true, reason } };
+}
+
 function fmtMoney(v) {
   if (v === null || v === undefined) return "(unknown)";
   return `$${Number(v).toLocaleString("en-US")}`;
@@ -212,70 +305,95 @@ function fmtMoney2(v) {
 // Markdown report formatter
 // ---------------------------------------------------------------------------
 
-function formatReport(address, sections) {
+function formatReport(address, sections, meta) {
   const lines = [];
-  lines.push(`# Austin Property 360: ${address}`);
+  lines.push(`# Austin Metro Property 360: ${address}`);
   lines.push("");
-  lines.push(`*One-shot property report. Eight authoritative sources in parallel.*`);
+  const countyLabel = formatCountyLabel(sections.cad, meta);
+  lines.push(`*${countyLabel} -- multi-source property report.*`);
   lines.push("");
 
-  // Headline summary
   lines.push(...summaryBlock(sections));
   lines.push("");
 
-  // Section: TCAD
-  lines.push(`## 1. Travis CAD (TCAD)`);
-  lines.push(...sectionTcad(sections.cad));
+  lines.push(`## 1. County Appraisal District (${cadName(sections.cad)})`);
+  lines.push(...sectionCad(sections.cad));
   lines.push("");
 
-  // Section: Tax
   lines.push(`## 2. Travis County Tax Office`);
   lines.push(...sectionTax(sections.tax));
   lines.push("");
 
-  // Section: Taxing Entities (MUD/PID)
   lines.push(`## 3. Taxing Entities (MUD / PID / ESD / ISD)`);
   lines.push(...sectionEntities(sections.entities));
   lines.push("");
 
-  // Section: FEMA Flood
   lines.push(`## 4. FEMA Flood Zone`);
   lines.push(...sectionFlood(sections.flood));
   lines.push("");
 
-  // Section: Zoning
   lines.push(`## 5. Austin Zoning`);
   lines.push(...sectionZoning(sections.zoning));
   lines.push("");
 
-  // Section: Permits
   lines.push(`## 6. Austin Permits`);
   lines.push(...sectionPermits(sections.permits));
   lines.push("");
 
-  // Section: Code Cases
   lines.push(`## 7. Austin Code Compliance Cases`);
   lines.push(...sectionCodeCases(sections.code_cases));
   lines.push("");
 
-  // Section: 311
   lines.push(`## 8. Austin 311 Service Requests`);
   lines.push(...sectionSr(sections.sr_311));
   lines.push("");
 
   lines.push(`---`);
-  lines.push(`Sources: TCAD (True Prodigy) · Travis County Tax Office · FEMA NFHL · U.S. Census Geocoder · City of Austin Open Data Portal · Austin Code Department · Austin Planning Department.`);
+  lines.push(
+    `Sources: TCAD (True Prodigy) · WCAD (ArcGIS) · HCAD (ArcGIS) · Travis County Tax Office · FEMA NFHL · U.S. Census Geocoder · City of Austin Open Data Portal · Austin Code Department · Austin Planning Department.`
+  );
   lines.push(ATTRIBUTION_TAG);
   return lines.join("\n");
+}
+
+function formatCountyLabel(cadSec, meta) {
+  const detected = meta?.detected;
+  const requested = meta?.requested;
+  const found = cadSec?.value?.county;
+  const parts = [];
+  if (requested) parts.push(`Forced county: ${cap(requested)}`);
+  else if (detected) parts.push(`Detected county: ${cap(detected)}`);
+  else parts.push(`County not auto-detected -- ran fan-out search`);
+  if (found && found !== detected) parts.push(`(matched in ${cap(found)})`);
+  return parts.join(" ");
+}
+
+function cap(s) {
+  return s ? s[0].toUpperCase() + s.slice(1) : s;
+}
+
+function cadName(cadSec) {
+  const c = cadSec?.value?.county;
+  if (c === "travis") return "TCAD";
+  if (c === "williamson") return "WCAD";
+  if (c === "hays") return "HCAD";
+  return "no match";
 }
 
 function summaryBlock(s) {
   const lines = [`## Summary`];
   const cad = s.cad?.value;
   if (s.cad?.ok && cad?.found) {
+    const valueStr = cad.market_value
+      ? `${fmtMoney(cad.market_value)} (${cap(cad.county)} CAD)`
+      : `(values not published in ${cap(cad.county)} GIS feed)`;
     lines.push(
-      `- **Owner:** ${cad.owner ?? "?"}  |  **TCAD value:** ${fmtMoney(cad.market_value)}  |  **Acreage:** ${cad.legal_acreage ?? "?"}`
+      `- **Owner:** ${cad.owner ?? "?"}  |  **Value:** ${valueStr}  |  **Acreage:** ${cad.legal_acreage ?? "?"}`
     );
+    if (cad.year_built) lines.push(`- **Year built:** ${cad.year_built}  |  **Sqft:** ${cad.building_area_sqft?.toLocaleString() ?? "?"}`);
+    if (cad.school_district) lines.push(`- **School District:** ${cad.school_district}`);
+  } else if (s.cad?.ok) {
+    lines.push(`- **CAD:** No match in any of TCAD / WCAD / HCAD.`);
   }
   const tax = s.tax?.value;
   if (s.tax?.ok && tax?.found) {
@@ -283,6 +401,8 @@ function summaryBlock(s) {
     lines.push(
       `- **Total tax due:** ${fmtMoney2(tax.total_due)}${flag}  (current ${fmtMoney2(tax.current_year_due?.total_due ?? 0)} + prior ${fmtMoney2(tax.prior_years_due?.total_due ?? 0)})`
     );
+  } else if (tax?.skipped) {
+    lines.push(`- **Tax bill:** *${tax.reason}*`);
   }
   const ent = s.entities?.value;
   if (s.entities?.ok && ent?.found) {
@@ -295,53 +415,62 @@ function summaryBlock(s) {
   }
   const fld = s.flood?.value;
   if (s.flood?.ok && fld?.found) {
-    lines.push(
-      `- **FEMA flood zone:** ${fld.flood_zone}${fld.in_sfha ? " (in SFHA)" : ""}`
-    );
+    lines.push(`- **FEMA flood zone:** ${fld.flood_zone}${fld.in_sfha ? " (in SFHA)" : ""}`);
   }
   const zone = s.zoning?.value;
-  if (s.zoning?.ok && zone?.found) {
+  if (s.zoning?.ok && zone?.found && !zone.skipped) {
     const z = zone.rows[0];
-    lines.push(
-      `- **Zoning:** ${z.zoning_ztype ?? "?"}  (${z.base_zone_category ?? ""})`
-    );
+    lines.push(`- **Zoning:** ${z.zoning_ztype ?? "?"}  (${z.base_zone_category ?? ""})`);
   }
   const permits = s.permits?.value;
-  if (s.permits?.ok) {
-    lines.push(`- **Permits on file:** ${permits.count ?? 0}`);
-  }
+  if (s.permits?.ok && !permits.skipped) lines.push(`- **Permits on file:** ${permits.count ?? 0}`);
   const code = s.code_cases?.value;
-  if (s.code_cases?.ok) {
-    lines.push(`- **Code cases (all-time):** ${code.count ?? 0}`);
-  }
+  if (s.code_cases?.ok && !code.skipped) lines.push(`- **Code cases (all-time):** ${code.count ?? 0}`);
   const sr = s.sr_311?.value;
-  if (s.sr_311?.ok) {
-    lines.push(`- **311 requests (since ${sr.since_year}):** ${sr.count ?? 0}`);
-  }
+  if (s.sr_311?.ok && !sr.skipped) lines.push(`- **311 requests (since ${sr.since_year}):** ${sr.count ?? 0}`);
   return lines;
 }
 
-function sectionTcad(sec) {
+function sectionCad(sec) {
   if (!sec?.ok) return [`*Error: ${sec?.error}*`];
   const v = sec.value;
-  if (!v.found) return [`*No TCAD record matched.*`];
-  return [
+  if (!v.found) return [`*No CAD record matched in any of TCAD / WCAD / HCAD.*`];
+  const lines = [
     `- **Owner:** ${v.owner ?? "?"}`,
     `- **Site address:** ${v.site_address ?? "?"}`,
-    `- **Market value:** ${fmtMoney(v.market_value)}`,
-    `- **Appraised value:** ${fmtMoney(v.appraised_value)}`,
-    `- **Land / Improvements:** ${fmtMoney(v.land_value)} / ${fmtMoney(v.improvement_value)}`,
-    `- **Acreage:** ${v.legal_acreage ?? "?"}`,
-    `- **Zoning (per TCAD):** ${v.zoning ?? "(none)"}`,
-    `- **Legal:** ${v.legal_description ?? "?"}`,
-    `- **Property ID:** ${v.property_id}  |  **Geo ID:** ${v.geo_id}`,
-    `- **TCAD detail page:** ${v.detail_url}`,
   ];
+  if (v.market_value !== null) lines.push(`- **Market value:** ${fmtMoney(v.market_value)}`);
+  if (v.appraised_value !== null && v.appraised_value !== v.market_value) {
+    lines.push(`- **Appraised value:** ${fmtMoney(v.appraised_value)}`);
+  }
+  if (v.land_value !== null || v.improvement_value !== null) {
+    lines.push(`- **Land / Improvements:** ${fmtMoney(v.land_value)} / ${fmtMoney(v.improvement_value)}`);
+  }
+  if (v.yoy_change !== null) {
+    const pct = v.yoy_change_pct !== null ? ` (${v.yoy_change_pct}%)` : "";
+    lines.push(`- **YoY change:** ${fmtMoney(v.yoy_change)}${pct}`);
+  }
+  if (v.legal_acreage !== null) lines.push(`- **Acreage:** ${v.legal_acreage}`);
+  if (v.year_built) lines.push(`- **Year built:** ${v.year_built}`);
+  if (v.building_area_sqft) lines.push(`- **Building area:** ${v.building_area_sqft.toLocaleString()} sqft`);
+  if (v.subdivision) lines.push(`- **Subdivision:** ${v.subdivision}`);
+  if (v.school_district) lines.push(`- **School district:** ${v.school_district}`);
+  if (v.zoning) lines.push(`- **Zoning (per CAD):** ${v.zoning}`);
+  if (v.legal_description) lines.push(`- **Legal:** ${v.legal_description}`);
+  if (v.property_id) lines.push(`- **Property ID:** ${v.property_id}${v.geo_id && v.geo_id !== v.property_id ? `  |  **Geo ID:** ${v.geo_id}` : ""}`);
+  if (v.detail_url) lines.push(`- **CAD detail page:** ${v.detail_url}`);
+  if (v.source) lines.push(`- **Source:** ${v.source}`);
+  if (v.market_value === null && v.county === "williamson") {
+    lines.push(``);
+    lines.push(`> *Note: WCAD redacts dollar values from its public GIS feed. Use the CAD detail page above for current assessed values.*`);
+  }
+  return lines;
 }
 
 function sectionTax(sec) {
   if (!sec?.ok) return [`*Error: ${sec?.error}*`];
   const v = sec.value;
+  if (v.skipped) return [`*${v.reason}*`];
   if (!v.found) return [`*No Travis County tax account matched.*`];
   const lines = [
     `- **Account:** ${v.account_id}`,
@@ -350,9 +479,7 @@ function sectionTax(sec) {
     `- **${v.current_tax_year} current year:** ${fmtMoney2(v.current_year_due?.total_due ?? 0)}`,
   ];
   if ((v.prior_years_due?.total_due ?? 0) > 0) {
-    lines.push(
-      `- **Prior years delinquent:** ${fmtMoney2(v.prior_years_due.total_due)}  🔴`
-    );
+    lines.push(`- **Prior years delinquent:** ${fmtMoney2(v.prior_years_due.total_due)}  🔴`);
   }
   lines.push(`- **TOTAL DUE:** ${fmtMoney2(v.total_due)}`);
   lines.push(`- **Delinquent:** ${v.is_delinquent ? "**YES**" : "No"}`);
@@ -362,6 +489,7 @@ function sectionTax(sec) {
 function sectionEntities(sec) {
   if (!sec?.ok) return [`*Error: ${sec?.error}*`];
   const v = sec.value;
+  if (v.skipped) return [`*${v.reason}*`];
   if (!v.found || !v.entities?.length) return [`*No taxing entity detail returned.*`];
   const lines = [];
   if (v.has_mud) lines.push(`**MUD detected:** YES`);
@@ -398,6 +526,7 @@ function sectionFlood(sec) {
 function sectionZoning(sec) {
   if (!sec?.ok) return [`*Error: ${sec?.error}*`];
   const v = sec.value;
+  if (v.skipped) return [`*${v.reason}*`];
   if (!v.found || !v.rows?.length) return [`*No zoning record (City of Austin jurisdiction only).*`];
   const lines = [];
   for (const z of v.rows) {
@@ -409,6 +538,7 @@ function sectionZoning(sec) {
 function sectionPermits(sec) {
   if (!sec?.ok) return [`*Error: ${sec?.error}*`];
   const v = sec.value;
+  if (v.skipped) return [`*${v.reason}*`];
   if (!v.found) return [`*No permits on file.*`];
   const byType = {};
   for (const r of v.rows) {
@@ -431,6 +561,7 @@ function sectionPermits(sec) {
 function sectionCodeCases(sec) {
   if (!sec?.ok) return [`*Error: ${sec?.error}*`];
   const v = sec.value;
+  if (v.skipped) return [`*${v.reason}*`];
   if (!v.found) return [`*No code-compliance cases on file. ✅*`];
   const lines = [`**${v.count} case${v.count === 1 ? "" : "s"} on file.**`, ""];
   for (const r of v.rows.slice(0, 8)) {
@@ -444,6 +575,7 @@ function sectionCodeCases(sec) {
 function sectionSr(sec) {
   if (!sec?.ok) return [`*Error: ${sec?.error}*`];
   const v = sec.value;
+  if (v.skipped) return [`*${v.reason}*`];
   if (!v.found) return [`*No 311 service requests at this address since ${v.since_year}.*`];
   const byType = {};
   for (const r of v.rows) {
