@@ -31,6 +31,10 @@ import { austinAfd } from "./tools/civic/austin-afd.js";
 import { austinCouncilVotes } from "./tools/civic/austin-council-votes.js";
 import { austinCityBudget } from "./tools/civic/austin-city-budget.js";
 import { austinDistrictLookup } from "./tools/civic/austin-district-lookup.js";
+import { austinLibraries } from "./tools/civic/austin-libraries.js";
+import { austinParks } from "./tools/civic/austin-parks.js";
+import { austinFireStations } from "./tools/civic/austin-fire-stations.js";
+import { austinPoliceData } from "./tools/civic/austin-police-data.js";
 import { austinNwsAlerts } from "./tools/environment/austin-nws-alerts.js";
 import { lakeTravisLevel } from "./tools/environment/lake-travis-level.js";
 import { austinActiveListings } from "./tools/realestate/austin-active-listings.js";
@@ -59,6 +63,10 @@ const ALL_TOOLS = [
   austinCouncilVotes,
   austinCityBudget,
   austinDistrictLookup,
+  austinLibraries,
+  austinParks,
+  austinFireStations,
+  austinPoliceData,
   austinNwsAlerts,
   lakeTravisLevel,
   austinActiveListings,
