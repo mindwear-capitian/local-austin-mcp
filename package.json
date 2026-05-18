@@ -1,6 +1,6 @@
 {
   "name": "local-austin-mcp",
-  "version": "0.2.0",
+  "version": "0.9.0",
   "private": true,
   "description": "MCP server giving Claude plain-English access to every official Austin and Travis County dataset.",
   "main": "index.js",
