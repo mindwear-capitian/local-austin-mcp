@@ -2,14 +2,6 @@
   "_comment": "Austin local voices the MCP surfaces. Independent writers / community newsletters, free, with open RSS. Adding a source = new object below; rebuild not required.",
   "sources": [
     {
-      "slug": "austin-kleon",
-      "name": "Austin Kleon",
-      "url": "https://austinkleon.substack.com/",
-      "feed": "https://austinkleon.substack.com/feed",
-      "beat": "creativity, writing, art, Austin life",
-      "type": "individual"
-    },
-    {
       "slug": "eric-webb-turning-out",
       "name": "Eric Webb — Turning Out",
       "url": "https://byericwebb.substack.com/",

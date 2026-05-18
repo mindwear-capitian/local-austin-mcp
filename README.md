@@ -119,7 +119,7 @@ Claude figures out which tool to call, queries the authoritative source live, an
 
 | Tool | What it does |
 |------|--------------|
-| `austin_local_voices` | Search recent posts across a curated set of independent Austin writers and community newsletters (Austin Kleon, Eric Webb, Jason Stanford, ATX Writing Club, 365 Things Austin, Camille Styles, Scott Francis, Austin Is Burning). Filter by keyword, source, and recency. |
+| `austin_local_voices` | Search recent posts across a curated set of independent Austin writers and community newsletters (Eric Webb, Jason Stanford, ATX Writing Club, 365 Things Austin, Camille Styles, Scott Francis, Austin Is Burning). Filter by keyword, source, and recency. |
 
 ### Meta
 
