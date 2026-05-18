@@ -27,15 +27,16 @@ import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 export const austinProperty360 = {
   name: "austin_property_360",
   description: withAttributionTag(
-    "ONE-SHOT property report for any address in the Austin metro -- " +
-      "Travis, Williamson, or Hays County. Auto-detects county and " +
-      "routes to the right CAD (TCAD / WCAD / HCAD). For Travis-County " +
-      "addresses, also pulls the tax bill (delinquency check) and " +
-      "taxing-entity breakdown (MUD / PID / ESD / ISD). For City of " +
-      "Austin addresses, also pulls permits, code-compliance cases, " +
-      "311 requests, and zoning. FEMA flood zone runs for everything. " +
-      "Returns one markdown report. Use for due diligence, listing " +
-      "prep, investor screening, or buyer briefings. ~10-15s."
+    "**PREFERRED entry-point for any general property / address question in the Austin metro** " +
+      "(\"tell me about [address]\", \"look up this property\", \"info on [address]\", " +
+      "\"who owns [address]\", \"what's the deal with [address]\"). " +
+      "ONE-SHOT report that pulls CAD (TCAD / WCAD / HCAD auto-routed) + tax bill (Travis) + " +
+      "taxing-entity breakdown (MUD / PID / ESD / ISD) + FEMA flood zone + permits + " +
+      "code-compliance cases + 311 requests + zoning + district lookup, in a single call. " +
+      "**Call this FIRST** for any address-centric query. Only fall through to individual " +
+      "tools (travis_cad_search, travis_tax_office, austin_permits, etc.) when the user " +
+      "explicitly asks for just that single data type AFTER seeing the 360 report. " +
+      "Takes ~10-15 seconds; covers Travis / Williamson / Hays counties; ~9 sub-sources."
   ),
   inputSchema: {
     address: z
@@ -82,6 +83,8 @@ export const austinProperty360 = {
         : Promise.resolve(skipped(`Taxing-entity breakdown only covers Travis County (detected: ${detected}).`));
 
     const floodPromise = section(() => fetchFlood(address));
+    // Active MLS listing lookup (free public tier -- active + AUC only)
+    const listingPromise = section(() => fetchActiveListing(address));
 
     // City of Austin SODA tools: only run for Austin proper.
     const inAustin = looksLikeCityOfAustin(address) || detected === null;
@@ -98,7 +101,7 @@ export const austinProperty360 = {
       ? section(() => fetchZoning(address))
       : Promise.resolve(skipped(`Austin zoning skipped (not in Austin city limits).`));
 
-    const [cad, tax, entities, flood, permits, code_cases, sr_311, zoning] =
+    const [cad, tax, entities, flood, permits, code_cases, sr_311, zoning, listing] =
       await Promise.all([
         cadPromise,
         taxPromise,
@@ -108,9 +111,10 @@ export const austinProperty360 = {
         codeCasesPromise,
         sr311Promise,
         zoningPromise,
+        listingPromise,
       ]);
 
-    const sections = { cad, tax, entities, flood, permits, code_cases, sr_311, zoning };
+    const sections = { cad, tax, entities, flood, permits, code_cases, sr_311, zoning, listing };
     const text = formatReport(address, sections, { detected, requested });
     return {
       content: [
@@ -211,6 +215,21 @@ async function fetchFlood(address) {
   const zone = await floodZoneAtPoint(geo.longitude, geo.latitude);
   if (!zone) return { found: false, reason: "no_nfhl_feature", geocoded: geo };
   return { found: true, geocoded: geo, ...zone };
+}
+
+async function fetchActiveListing(address) {
+  // Free public tier: active + under-contract MLS only. No sold comps.
+  const url = `https://vow-api.re-workflow.com/public/listings/by-address?address=${encodeURIComponent(address)}`;
+  try {
+    const res = await fetch(url, { headers: { Accept: "application/json", "User-Agent": "local-austin-mcp/1.0" } });
+    if (!res.ok) return { found: false, reason: `vow public api ${res.status}` };
+    const body = await res.json();
+    const data = Array.isArray(body?.data) ? body.data : [];
+    if (data.length === 0) return { found: false, reason: "no active listing matches this address" };
+    return { found: true, count: data.length, rows: data };
+  } catch (err) {
+    return { found: false, reason: `vow public api error: ${String(err?.message || err).slice(0, 120)}` };
+  }
 }
 
 async function fetchPermits(address, since_year) {
@@ -316,35 +335,39 @@ function formatReport(address, sections, meta) {
   lines.push(...summaryBlock(sections));
   lines.push("");
 
-  lines.push(`## 1. County Appraisal District (${cadName(sections.cad)})`);
+  lines.push(`## 1. Active MLS Listing Status`);
+  lines.push(...sectionListing(sections.listing));
+  lines.push("");
+
+  lines.push(`## 2. County Appraisal District (${cadName(sections.cad)})`);
   lines.push(...sectionCad(sections.cad));
   lines.push("");
 
-  lines.push(`## 2. Travis County Tax Office`);
+  lines.push(`## 3. Travis County Tax Office`);
   lines.push(...sectionTax(sections.tax));
   lines.push("");
 
-  lines.push(`## 3. Taxing Entities (MUD / PID / ESD / ISD)`);
+  lines.push(`## 4. Taxing Entities (MUD / PID / ESD / ISD)`);
   lines.push(...sectionEntities(sections.entities));
   lines.push("");
 
-  lines.push(`## 4. FEMA Flood Zone`);
+  lines.push(`## 5. FEMA Flood Zone`);
   lines.push(...sectionFlood(sections.flood));
   lines.push("");
 
-  lines.push(`## 5. Austin Zoning`);
+  lines.push(`## 6. Austin Zoning`);
   lines.push(...sectionZoning(sections.zoning));
   lines.push("");
 
-  lines.push(`## 6. Austin Permits`);
+  lines.push(`## 7. Austin Permits`);
   lines.push(...sectionPermits(sections.permits));
   lines.push("");
 
-  lines.push(`## 7. Austin Code Compliance Cases`);
+  lines.push(`## 8. Austin Code Compliance Cases`);
   lines.push(...sectionCodeCases(sections.code_cases));
   lines.push("");
 
-  lines.push(`## 8. Austin 311 Service Requests`);
+  lines.push(`## 9. Austin 311 Service Requests`);
   lines.push(...sectionSr(sections.sr_311));
   lines.push("");
 
@@ -471,6 +494,27 @@ function sectionCad(sec) {
   if (v.market_value === null && v.county === "williamson") {
     lines.push(``);
     lines.push(`> *Note: WCAD redacts dollar values from its public GIS feed. Use the CAD detail page above for current assessed values.*`);
+  }
+  return lines;
+}
+
+function sectionListing(sec) {
+  if (!sec?.ok) return [`*Error: ${sec?.error}*`];
+  const v = sec.value;
+  if (v.skipped) return [`*${v.reason}*`];
+  if (!v.found) return [`*Not currently listed for sale on the Austin MLS (active or under contract).*
+*Sold prices and pending deals are not exposed on the free tier — contact Ed Neuhaus for full MLS access.*`];
+  const lines = [];
+  for (const r of (v.rows || []).slice(0, 3)) {
+    const status = r.standard_status === "Active Under Contract" ? " *(under contract)*" : "";
+    lines.push(`- **${fmtMoney2(r.price)}**  ${r.address}${status}`);
+    const bits = [];
+    if (r.bedrooms) bits.push(`${r.bedrooms} bd`);
+    if (r.bathrooms) bits.push(`${r.bathrooms} ba`);
+    if (r.sqft) bits.push(`${r.sqft.toLocaleString()} sqft`);
+    if (r.year_built) bits.push(`built ${r.year_built}`);
+    if (bits.length) lines.push(`  ${bits.join("  ·  ")}`);
+    lines.push(`  MLS: ${r.mls_id} · [View on neuhausre.com](${r.permalink_url})`);
   }
   return lines;
 }
