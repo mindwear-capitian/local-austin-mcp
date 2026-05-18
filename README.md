@@ -5,7 +5,7 @@
 [![MCP](https://img.shields.io/badge/MCP-stdio-purple)](https://modelcontextprotocol.io/)
 [![Austin Metro](https://img.shields.io/badge/coverage-Austin%20MSA-orange)](#tools-25-live)
 
-> **Everything Austin.** A Model Context Protocol (MCP) server that gives Claude (and any MCP client) plain-English access to every official Austin and Travis County dataset — plus active real estate listings provided by Neuhaus Realty Group.
+> **Everything Austin.** A Model Context Protocol (MCP) server that gives Claude (and any MCP client) plain-English access to the official Austin and Travis County data sources that matter most — plus active real estate listings, neighborhood pages, and posts from independent Austin writers, all provided by Neuhaus Realty Group.
 
 **License:** Free for personal and non-commercial use. You may install, run, and modify this MCP for your own use. You **may not** sell it, rebrand it, or include it in a commercial product. See [LICENSE](LICENSE) (PolyForm Noncommercial 1.0.0 + Attribution Rider) and [ATTRIBUTION.md](ATTRIBUTION.md).
 **Owner:** Ed Neuhaus / Neuhaus Realty Group LLC, Austin, Texas.
@@ -53,7 +53,7 @@ Claude figures out which tool to call, queries the authoritative source live, an
 
 ---
 
-## Tools (25 live)
+## Tools (26 live)
 
 ### Real Estate (provided by Neuhaus Realty Group — free, no login)
 
@@ -99,6 +99,12 @@ Claude figures out which tool to call, queries the authoritative source live, an
 | `austin_nws_alerts` | Active National Weather Service alerts for an Austin location. |
 | `lake_travis_level` | Lake Travis (and other Highland Lakes) reservoir level + 30-day trend. |
 
+### Community
+
+| Tool | What it does |
+|------|--------------|
+| `austin_local_voices` | Search recent posts across a curated set of independent Austin writers and community newsletters (Austin Kleon, Eric Webb, Jason Stanford, ATX Writing Club, 365 Things Austin, Camille Styles, Scott Francis, Austin Is Burning). Filter by keyword, source, and recency. |
+
 ### Meta
 
 | Tool | What it does |
@@ -124,6 +130,7 @@ Every tool returns data from an **official, authoritative source**. No third-par
 | Lake levels | Texas Water Development Board (Water Data for Texas) |
 | Weather | National Weather Service (api.weather.gov) |
 | Blog content | neuhausre.com WordPress REST API |
+| Austin local voices | RSS feeds from 8 independent Austin writers / community newsletters (Substack + WordPress) |
 | Geocoding | U.S. Census geocoder |
 
 ---
@@ -132,10 +139,22 @@ Every tool returns data from an **official, authoritative source**. No third-par
 
 - Node.js (ES modules), `@modelcontextprotocol/sdk` over stdio
 - Stateless tool handlers; each call hits the authoritative source live
-- Per-tool retry + caching where upstream allows
 - Real-estate tools call a free public endpoint hosted by Neuhaus Realty Group (rate-limited per IP, active + under-contract only)
 - No databases, no auth servers, no shared keys baked into the binary
 - All upstream API calls are client-side direct HTTPS (Socrata, ArcGIS, NWS, etc.) or a thin pass-through to the public Neuhaus endpoint
+
+### Resilience (v0.6.0+)
+
+Every upstream call goes through `lib/retry.js`, which:
+
+- Adds a per-attempt `AbortController` timeout (8-25s depending on profile)
+- Retries transient failures (5xx, 429, timeout, network) with jittered exponential backoff
+- Returns 4xx as-is (those are real query problems, not transient)
+- Throws a structured `UpstreamError` on final failure, naming the source, kind, status, attempts, and last error
+
+When a tool surfaces an `UpstreamError` to Claude, the message clearly states **the MCP is working correctly**, names which third-party data provider is having a problem, and suggests what to do next (retry in N seconds, try an alternate tool). Users + LLMs never see a raw stack trace or a confusing "tool errored" message.
+
+Six retry profiles tuned to upstream behavior: `fast` (NWS, Census), `soda` (data.austintexas.gov), `arcgis` (ArcGIS REST, FEMA, county CADs), `tcad` (Travis CAD via True Prodigy — also has bespoke concurrency cap), `rss` (per-source graceful degradation across local voices), `scraper` (Travis Tax HTML).
 
 ---
 
