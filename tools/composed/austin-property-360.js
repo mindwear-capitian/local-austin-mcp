@@ -397,9 +397,17 @@ function summaryBlock(s) {
   }
   const tax = s.tax?.value;
   if (s.tax?.ok && tax?.found) {
-    const flag = tax.is_delinquent ? " 🔴 DELINQUENT" : "";
+    const priorTotal = tax.prior_years_due?.total_due ?? 0;
+    const currentTotal = tax.current_year_due?.total_due ?? 0;
+    const priorNote = priorTotal > 0 ? "  (includes a prior-year balance still on the books)" : "";
     lines.push(
-      `- **Total tax due:** ${fmtMoney2(tax.total_due)}${flag}  (current ${fmtMoney2(tax.current_year_due?.total_due ?? 0)} + prior ${fmtMoney2(tax.prior_years_due?.total_due ?? 0)})`
+      `- **Total balance due:** ${fmtMoney2(tax.total_due)}${priorNote}`
+    );
+    lines.push(
+      `  - Current year (${tax.current_tax_year ?? "current"}): ${fmtMoney2(currentTotal)}`
+    );
+    lines.push(
+      `  - Prior years: ${fmtMoney2(priorTotal)}`
     );
   } else if (tax?.skipped) {
     lines.push(`- **Tax bill:** *${tax.reason}*`);
@@ -472,17 +480,30 @@ function sectionTax(sec) {
   const v = sec.value;
   if (v.skipped) return [`*${v.reason}*`];
   if (!v.found) return [`*No Travis County tax account matched.*`];
+  const priorTotal = v.prior_years_due?.total_due ?? 0;
+  const currentTotal = v.current_year_due?.total_due ?? 0;
   const lines = [
     `- **Account:** ${v.account_id}`,
     `- **Owner:** ${v.owner ?? "?"}`,
     `- **Mailing:** ${v.mailing_address ?? "?"}`,
-    `- **${v.current_tax_year} current year:** ${fmtMoney2(v.current_year_due?.total_due ?? 0)}`,
+    ``,
+    `### TOTAL BALANCE DUE: ${fmtMoney2(v.total_due)}`,
+    ``,
+    `- **Current year balance due (${v.current_tax_year ?? "current tax year"}):** ${fmtMoney2(currentTotal)}`,
+    `- **Prior year balance due:** ${fmtMoney2(priorTotal)}`,
   ];
-  if ((v.prior_years_due?.total_due ?? 0) > 0) {
-    lines.push(`- **Prior years delinquent:** ${fmtMoney2(v.prior_years_due.total_due)}  🔴`);
+  if (priorTotal > 0) {
+    lines.push(
+      `- *Status note:* This account has a prior-year balance still on the books. ` +
+        `That is a factual data point only -- it does not imply foreclosure, ` +
+        `tax sale, lis pendens, or any legal action, and it does not necessarily ` +
+        `mean the owner is in financial distress. Verify payment status with the Travis County Tax Office.`
+    );
   }
-  lines.push(`- **TOTAL DUE:** ${fmtMoney2(v.total_due)}`);
-  lines.push(`- **Delinquent:** ${v.is_delinquent ? "**YES**" : "No"}`);
+  lines.push(
+    `- *Homestead / senior / disability exemptions:* Not available in this tool. ` +
+      `Verify exemption status directly with Travis Central Appraisal District (https://www.traviscad.org).`
+  );
   return lines;
 }
 

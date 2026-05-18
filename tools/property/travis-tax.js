@@ -128,35 +128,69 @@ function formatResults(query, details) {
   ];
 
   for (const d of details) {
+    const c = d.current_year_due ?? {};
+    const p = d.prior_years_due ?? {};
+    const currentTotal = c.total_due ?? 0;
+    const priorTotal = p.total_due ?? 0;
+    const grandTotal = d.total_due ?? (currentTotal + priorTotal);
+
     lines.push(`## Account ${d.account_id}`);
     if (d.owner) lines.push(`- **Owner:** ${d.owner}`);
     if (d.mailing_address) lines.push(`- **Mailing:** ${d.mailing_address}`);
     if (d.legal_description) lines.push(`- **Legal:** ${d.legal_description}`);
+    lines.push("");
 
+    // Lead with the GRAND TOTAL so LLMs never confuse it with a per-year total.
+    lines.push(`### TOTAL BALANCE DUE: ${fmtMoney(grandTotal)}`);
+    lines.push("");
+    lines.push(`- **Current year balance due (${d.current_tax_year ?? "current tax year"}):** ${fmtMoney(currentTotal)}`);
+    lines.push(`- **Prior year balance due:** ${fmtMoney(priorTotal)}`);
+    lines.push("");
+
+    // Per-year breakdown (kept as supporting detail, AFTER the totals).
     if (d.current_year_due && d.current_tax_year) {
-      const c = d.current_year_due;
       lines.push(
-        `- **${d.current_tax_year} Tax Year:** Base ${fmtMoney(c.base_due)} | ` +
-          `Penalty ${fmtMoney(c.penalty_interest)} | Fees ${fmtMoney(c.attorney_other_fees)} | ` +
-          `**Total ${fmtMoney(c.total_due)}**`
+        `Detail -- ${d.current_tax_year}: Base ${fmtMoney(c.base_due)} | ` +
+          `Penalty/Interest ${fmtMoney(c.penalty_interest)} | Fees ${fmtMoney(c.attorney_other_fees)}`
       );
     }
-    if (d.prior_years_due && d.prior_years_due.total_due > 0) {
-      const p = d.prior_years_due;
+    if (d.prior_years_due && (p.total_due ?? 0) > 0) {
       lines.push(
-        `- **Prior years delinquent:** Base ${fmtMoney(p.base_due)} | ` +
-          `Penalty ${fmtMoney(p.penalty_interest)} | Fees ${fmtMoney(p.attorney_other_fees)} | ` +
-          `**Total ${fmtMoney(p.total_due)}**`
+        `Detail -- prior years: Base ${fmtMoney(p.base_due)} | ` +
+          `Penalty/Interest ${fmtMoney(p.penalty_interest)} | Fees ${fmtMoney(p.attorney_other_fees)}`
       );
     }
-    lines.push(`- **TOTAL DUE:** ${fmtMoney(d.total_due)}`);
-    lines.push(`- **Delinquent:** ${d.is_delinquent ? "YES (prior years owed)" : "No"}`);
-    if (d.detail_url) lines.push(`- **Detail page:** ${d.detail_url}`);
+    lines.push("");
+
+    // Plain-language status note. We deliberately do NOT use the word
+    // "delinquent" without qualification, and we do NOT imply foreclosure
+    // or motivated seller. A prior-year balance can be paid off without any
+    // legal action and is not in itself evidence of distress.
+    if (priorTotal > 0) {
+      lines.push(
+        `- **Status note:** This account has a prior-year balance still on the books. ` +
+          `That is a factual data point only -- it does not imply foreclosure, ` +
+          `tax sale, lis pendens, or any legal action, and it does not necessarily ` +
+          `mean the owner is in financial distress. Confirm payment status with the Travis County Tax Office before drawing conclusions.`
+      );
+    }
+
+    // Exemption disclaimer -- exemptions live in TCAD (homestead, OV65, DV,
+    // etc.) and are NOT exposed by this tool today.
+    lines.push(
+      `- **Homestead / senior / disability exemptions:** Not available in this tool. ` +
+        `Verify exemption status directly with Travis Central Appraisal District (https://www.traviscad.org).`
+    );
+
+    if (d.detail_url) lines.push(`- **Tax-office detail page:** ${d.detail_url}`);
     lines.push("");
   }
 
   lines.push(`---`);
   lines.push(`Source: Travis County Tax Office (https://tax-office.traviscountytx.gov)`);
+  lines.push(
+    `*This tool returns factual tax-office balance data only. Exemptions, payment plans, and any legal-action status (lien, suit, foreclosure) are not exposed and must be verified at the source before relying on this information for any transaction.*`
+  );
   lines.push(ATTRIBUTION_TAG);
   return lines.join("\n");
 }
