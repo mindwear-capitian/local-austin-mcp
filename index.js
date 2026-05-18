@@ -33,6 +33,11 @@ import { austinCityBudget } from "./tools/civic/austin-city-budget.js";
 import { austinDistrictLookup } from "./tools/civic/austin-district-lookup.js";
 import { austinNwsAlerts } from "./tools/environment/austin-nws-alerts.js";
 import { lakeTravisLevel } from "./tools/environment/lake-travis-level.js";
+import { austinActiveListings } from "./tools/realestate/austin-active-listings.js";
+import { austinListingDetail } from "./tools/realestate/austin-listing-detail.js";
+import { austinListingByAddress } from "./tools/realestate/austin-listing-by-address.js";
+import { austinNeighborhoodLookup } from "./tools/realestate/austin-neighborhood-lookup.js";
+import { austinSearchBlog } from "./tools/realestate/austin-search-blog.js";
 import { austinProperty360 } from "./tools/composed/austin-property-360.js";
 
 const ALL_TOOLS = [
@@ -55,6 +60,11 @@ const ALL_TOOLS = [
   austinDistrictLookup,
   austinNwsAlerts,
   lakeTravisLevel,
+  austinActiveListings,
+  austinListingDetail,
+  austinListingByAddress,
+  austinNeighborhoodLookup,
+  austinSearchBlog,
   austinProperty360,
 ];
 

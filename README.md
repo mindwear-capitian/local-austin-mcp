@@ -1,151 +1,168 @@
 # Local Austin MCP
 
-> **Everything Austin.** A Model Context Protocol (MCP) server that gives Claude plain-English access to every official Austin and Travis County dataset.
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/License-PolyForm%20NC%201.0.0-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
+[![MCP](https://img.shields.io/badge/MCP-stdio-purple)](https://modelcontextprotocol.io/)
+[![Austin Metro](https://img.shields.io/badge/coverage-Austin%20MSA-orange)](#tools-25-live)
 
-**Status:** Closed-source. Private repository. Not for redistribution.
+> **Everything Austin.** A Model Context Protocol (MCP) server that gives Claude (and any MCP client) plain-English access to every official Austin and Travis County dataset — plus live MLS listings via the Neuhaus Realty Group VOW feed.
+
+**License:** Free for personal and non-commercial use. You may install, run, and modify this MCP for your own use. You **may not** sell it, rebrand it, or include it in a commercial product. See [LICENSE](LICENSE) (PolyForm Noncommercial 1.0.0 + Attribution Rider) and [ATTRIBUTION.md](ATTRIBUTION.md).
 **Owner:** Ed Neuhaus / Neuhaus Realty Group LLC, Austin, Texas.
-**Product:** Hosted at `austin-mcp.com` (coming soon). Source code is not published.
-**Internal license files** ([LICENSE](LICENSE), [ATTRIBUTION.md](ATTRIBUTION.md), [TRADEMARK.md](TRADEMARK.md)) are kept for future-proofing only. They have no effect while the repository is private.
-
-## Credits
-
-> Built by Ed Neuhaus / Neuhaus Realty Group LLC -- https://neuhausre.com
+**Source:** https://github.com/mindwear-capitian/local-austin-mcp
+**Powered by:** Neuhaus Realty Group — https://neuhausre.com (the live MLS data, neighborhood pages, and blog content surfaced by this MCP are served from Ed's Austin VOW feed).
 
 ---
 
-## What This Is
+## Install
 
-One MCP server. One install. Ask Claude any question about Austin or Travis County and get the answer pulled live from the authoritative source.
+Add to your Claude Desktop config:
 
-Built to serve:
+```jsonc
+// claude_desktop_config.json
+{
+  "mcpServers": {
+    "local-austin": {
+      "command": "npx",
+      "args": ["-y", "github:mindwear-capitian/local-austin-mcp"]
+    }
+  }
+}
+```
 
-- **Residents** -- "When is my trash pickup? Who is my city council rep?"
-- **Visitors** -- "What's open today? Where are the closest food trucks? What's the weather and lake level at Barton Springs?"
-- **Homebuyers + Investors** -- "Tell me everything about 1234 Main St -- value, taxes, deeds, permits, flood zone, schools, crime, code violations."
-- **Real estate agents** -- "Pull TCAD on this listing. Check for any open code cases. What permits ran in the last 10 years?"
-- **Local journalists / civic tech** -- "What did Council vote on this week? How many 311 calls about potholes in District 9 this month?"
-
----
-
-## Why This Exists
-
-Austin and Travis County publish dozens of authoritative datasets across half a dozen portals (`data.austintexas.gov`, `traviscentralad.org`, `tax-office.traviscountytx.gov`, `tccsearch.org`, FEMA, TEA, Cap Metro, and more). Most people never use them because each one has its own format, query language, and quirks.
-
-This MCP wraps all of them behind a single Claude tool surface. You ask in English. Claude figures out which dataset to hit, queries it live, and gives you the answer with a `source_url` so you can verify.
+Restart Claude Desktop. That's the whole setup. No API keys required for any tool. Optional: set `AUSTIN_SODA_APP_TOKEN` in your env to raise rate limits on the Socrata-backed tools (311, AFD, crime, council, budget, permits, code cases) — [free signup at data.austintexas.gov](https://data.austintexas.gov/profile/edit/developer_settings).
 
 ---
 
-## Source Of Truth
+## Try It
 
-Every tool returns data from an **official, authoritative source**. No scraping of third-party aggregators. No AI-generated summaries presented as fact. Every response includes a `source_url` field so you can verify the underlying record.
+Once installed, ask Claude things like:
 
-Confirmed source families:
+- *"Show me 3-bedroom homes in 78704 under $700k with a pool."*
+- *"Tell me everything about 9501 San Lucas Dr in Austin — value, taxes, permits, flood zone, schools."*
+- *"What's Lake Travis at right now?"*
+- *"Who's the city council rep for 1100 Congress Ave?"*
+- *"Pull up Austin AFD incidents from the last 24 hours near my address."*
+- *"What did Austin City Council vote on short-term rental ordinances?"*
+- *"Find me condos in Tarrytown — what's the active inventory?"*
+- *"What did Ed Neuhaus write about the Austin market in 2026?"*
+- *"Is there an active flood-zone alert for 78731 right now?"*
+- *"Pull TCAD on 1234 Main St in Round Rock."*
+
+Claude figures out which tool to call, queries the authoritative source live, and returns a `source_url` so you can verify.
+
+---
+
+## Tools (25 live)
+
+### Real Estate (Neuhaus Realty Group VOW feed — free, no login)
+
+| Tool | What it does |
+|------|--------------|
+| `austin_active_listings` | Search active for-sale MLS listings by city / ZIP / school district / subdivision + price / beds / features. Active + under-contract only. |
+| `austin_listing_detail` | Pull a single listing by MLS ID — price, beds, sqft, features, photos, neuhausre.com permalink. |
+| `austin_listing_by_address` | Find an active listing by street address. |
+| `austin_neighborhood_lookup` | Search or look up Austin-area neighborhoods, with sample active listings. |
+| `austin_search_blog` | Search Ed Neuhaus's Austin real-estate blog on neuhausre.com. |
+
+### Property (county appraisal + tax + zoning + permits)
+
+| Tool | What it does |
+|------|--------------|
+| `travis_cad_search` | Travis CAD property lookup (owner, value, deeds) via True Prodigy API. |
+| `williamson_cad_search` | Williamson CAD lookup via ArcGIS. |
+| `hays_cad_search` | Hays CAD lookup via ArcGIS. |
+| `travis_tax_office` | Travis County Tax Office — current bill, exemptions, delinquencies. |
+| `mud_pid_lookup` | MUD / PID special-district overlay (Texas Comptroller). |
+| `fema_flood` | FEMA NFHL flood zone lookup. |
+| `austin_permits` | Full permit history for any City of Austin address. |
+| `austin_code_cases` | Active and historical code-compliance cases. |
+| `austin_zoning` | Austin zoning + lot dimensions + plat lookup. |
+| `austin_property_360` | Composed: one address → CAD + tax + flood + permits + code + 311 + zoning in one shot. |
+
+### Civic + Public Safety
+
+| Tool | What it does |
+|------|--------------|
+| `austin_311` | City of Austin 311 service requests. |
+| `austin_crime` | APD crime reports. |
+| `austin_afd_incidents` | Real-time Austin Fire Department dispatches. |
+| `austin_council_votes` | City Council voting records — search by topic, member, district, or date. |
+| `austin_city_budget` | City of Austin Open Budget — expense data by department, fund, fiscal year. |
+| `austin_district_lookup` | Given an address: returns council district, school district, ESD, voter precinct, neighborhood plan. |
+| `tea_schools` | TEA school + AISD attendance assignment. |
+
+### Environment
+
+| Tool | What it does |
+|------|--------------|
+| `austin_nws_alerts` | Active National Weather Service alerts for an Austin location. |
+| `lake_travis_level` | Lake Travis (and other Highland Lakes) reservoir level + 30-day trend. |
+
+### Meta
+
+| Tool | What it does |
+|------|--------------|
+| `about` | Version + capability summary. |
+
+---
+
+## Sources of Truth
+
+Every tool returns data from an **official, authoritative source**. No third-party aggregators. No AI-generated summaries presented as fact. Every response includes a `source_url` field so you can verify the underlying record.
 
 | Domain | Source |
 |--------|--------|
-| Property records | Travis CAD (via True Prodigy API) |
-| Deeds + liens | Travis County Clerk (tccsearch.org) |
+| Active MLS listings + neighborhoods | Neuhaus Realty Group VOW feed (active + AUC only, no sold comps, no login) |
+| Property records | Travis CAD (True Prodigy API), Williamson + Hays CAD (ArcGIS REST) |
 | Tax records | Travis County Tax Office |
 | Special districts | Texas Comptroller Special Purpose Districts |
-| Permits + zoning + 311 + crime + code violations + budget | data.austintexas.gov (Socrata SODA API) |
+| Permits + zoning + 311 + crime + code violations + budget + council votes + AFD | data.austintexas.gov (Socrata SODA API) |
 | Flood zones | FEMA NFHL + Austin floodplain GIS |
+| District boundaries | City of Austin + Travis County ArcGIS open-data services |
 | Schools | Texas Education Agency + AISD |
-| Transit | Cap Metro real-time + GTFS |
-| Lake levels + water quality | LCRA + City of Austin |
-| Weather + air quality | NWS + EPA AQS |
+| Lake levels | Texas Water Development Board (Water Data for Texas) |
+| Weather | National Weather Service (api.weather.gov) |
+| Blog content | neuhausre.com WordPress REST API |
+| Geocoding | U.S. Census geocoder |
 
 ---
 
-## Planned Categories
+## What's Not Here
 
-> Build is staged. Property + civic core first, then daily-life datasets, then visitor-facing.
+By design — protecting Ed's MLS access agreement + keeping the install free:
 
-### Property + Real Estate (Phase 1)
-- Travis CAD lookup
-- Travis County Clerk deeds + liens
-- Travis County Tax Office (current bill, exemptions, delinquencies, MUD/PID)
-- MUD / PID special-district overlay
-- Austin AB+C permits (full history per address)
-- Austin zoning, lot dimensions, plat
-- FEMA + Austin floodplain
-- AISD + TEA school assignment
-- TREC license verification
-- `austin_property_360` -- composed tool, one address -> all of the above
+- **Sold prices / closed comps** — VOW data, requires signed buyer-rep with Ed.
+- **Pending / withdrawn / expired listings** — same as above.
+- **Travis County Clerk deeds** — tccsearch.org is browser-only; integrated via Ed's [deed-lookup skill](https://neuhausre.com/) instead.
+- **TREC license verification** — low value, deferred.
+- **EPA AirNow AQI** — requires free API key signup; deferred.
+- **Cap Metro real-time** — deferred.
 
-### Civic + Public (Phase 2)
-- 311 service requests
-- Code violations
-- Council meeting agendas, minutes, votes
-- Boards + commissions
-- City budget
-- District lookup (council, school, MUD, fire)
-
-### Public Safety (Phase 2)
-- APD crime reports
-- AFD incidents
-- Traffic incidents + closures
-
-### Daily Life (Phase 3)
-- Garbage / recycling pickup by address
-- Library branches + hours + events
-- Park hours, dog parks, swimming holes, hiking trails
-- Restaurant inspection scores
-- Food truck permits
-- Farmers markets
-
-### Transit + Getting Around (Phase 3)
-- Cap Metro real-time arrivals
-- Bus + rail schedules
-- B-cycle station availability
-- Parking meters + zones
-- Construction + road closures
-
-### Visitor / Tourism (Phase 4)
-- Public art map
-- Free events this week
-- SXSW / ACL / F1 / Trail of Lights dates + traffic impact
-- Lake Travis level + boat ramp access
-- Town Lake water quality + Barton Springs status
-- Live music venues
-
-### Environment + Real-time (Phase 4)
-- Weather alerts (NWS)
-- Air quality (EPA AQS)
-- Wildfire risk
-- Tree inventory
-- Watersheds
+For anything in the first two rows, contact Ed Neuhaus at **(512) 827-8830** or **Ed@NeuhausRE.com** — sign a short buyer-rep agreement and get full MLS access via the [Neuhaus MLS MCP](https://mls.neuhausre.com/).
 
 ---
 
 ## Architecture
 
-- Node.js (ES modules), MCP SDK
-- Closed-source, hosted-only product. Users connect to `austin-mcp.com` from Claude Desktop via OAuth 2.1 + PKCE.
-- All upstream API calls server-side; users never see source code or API keys
-- Per-tool rate limiting + caching where upstream allows
-- Deployed on NeuhausRE VPS, same pattern as `mls.neuhausre.com`
+- Node.js (ES modules), `@modelcontextprotocol/sdk` over stdio
+- Stateless tool handlers; each call hits the authoritative source live
+- Per-tool retry + caching where upstream allows
+- Real-estate tools call the public `/public/*` namespace at `vow-api.re-workflow.com` (rate-limited per IP, active + AUC only, server-side tier-gated)
+- No databases, no auth servers, no shared keys baked into the binary
+- All upstream API calls are server-side (vow-api) or client-side direct HTTPS (Socrata, ArcGIS, NWS, etc.)
 
 ---
 
-## Status
+## Anti-Abuse Design
 
-**Phase 0: Repo + License + Plan** ✅
-**Phase 1: Property core** -- 9/10 tools live (Travis Clerk deeds permanently deferred; TREC skipped)
-**Phase 2: Civic + Public** -- 7 tools live (311, crime, AFD, TEA schools, council votes, city budget, district lookup)
-**Phase 3: Daily Life + Transit** -- planned (Cap Metro intentionally skipped)
-**Phase 4: Visitor + Environment** -- 2 tools live (NWS alerts, Lake Travis level). EPA AQI deferred -- AirNow gates behind a free API key.
+Real-estate tools rely on a public Neuhaus VOW endpoint. To keep the free tier sustainable:
 
-### Environment Variables
-
-| Var | Used By | Required? | Notes |
-|-----|---------|:---:|-------|
-| `AUSTIN_SODA_APP_TOKEN` | All Socrata-backed tools (311, AFD, crime, council, budget, permits, code cases) | optional | Free signup at data.austintexas.gov. Raises rate-limit ceiling. |
-
-### Deferred
-
-- **`travis_county_clerk_deeds`** -- **permanently deferred.** tccsearch.org is a JavaScript-rendered ASP.NET portal with no public API. A working browser-driven path already exists for Ed in the `deed-lookup` skill on Mac; replicating it in MCP would require an always-on Playwright service on the VPS for marginal benefit. Revisit only if a public API ships.
-- **`trec_license_verification`** -- skipped for now. Low value vs. cost.
-- **`austin_air_quality`** -- deferred. EPA AirNow, OpenAQ v3, and PurpleAir all gate behind API keys. WAQI works without one but aggregates third-party sources, which violates the "authoritative source only" rule. Revisit once we sign up for an AirNow key.
+- **Specificity score** — listings search requires ≥1 location filter PLUS additional filters totalling ≥4 points. A bare "homes in Austin" query is rejected. Forces useful queries; defeats programmatic enumeration.
+- **No pagination** — every search returns up to 25 best-match listings. Period. No `offset`, no `page`. Scrapers can't walk the database.
+- **Hard rate limit** — 10 requests / minute per IP, 500 / day per IP.
+- **PII strip** — listing agent name / email / office / buyer agent never returned on the free tier.
+- **Status pin** — server-side SQL hard filter on `Active` + `Active Under Contract` only.
 
 ---
 
