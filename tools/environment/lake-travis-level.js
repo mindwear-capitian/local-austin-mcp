@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
+import { retryFetch, upstreamErrorText, UpstreamError } from "../../lib/retry.js";
 
 /**
  * Lake Travis (and other Highland Lakes) reservoir level via the Texas Water
@@ -56,7 +57,23 @@ export const lakeTravisLevel = {
     }
 
     const url = `${BASE}/${meta.slug}-30day.csv`;
-    const csv = await fetchCsvWithRetry(url);
+    let csv;
+    try {
+      csv = await fetchCsvWithRetry(url);
+    } catch (err) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: upstreamErrorText(err, {
+              toolName: "lake_travis_level",
+              alternateTools: [],
+            }) + `\n\n${ATTRIBUTION_TAG}`,
+          },
+        ],
+        isError: true,
+      };
+    }
     const rows = parseCsv(csv);
 
     if (rows.length === 0) {
@@ -106,31 +123,15 @@ export const lakeTravisLevel = {
   },
 };
 
-async function fetchCsvWithRetry(url, attempts = 3) {
-  let lastErr;
-  for (let attempt = 0; attempt < attempts; attempt++) {
-    if (attempt > 0) {
-      // Backoff: 600ms, 1.5s.
-      const delay = attempt === 1 ? 600 : 1500;
-      await new Promise((r) => setTimeout(r, delay));
-    }
-    try {
-      const res = await fetch(url, { headers: { Accept: "text/csv" } });
-      if (!res.ok) {
-        const msg = `waterdatafortexas.org returned ${res.status} ${res.statusText}`;
-        if (/^5\d\d/.test(String(res.status))) {
-          lastErr = new Error(msg);
-          continue;
-        }
-        throw new Error(msg);
-      }
-      return await res.text();
-    } catch (err) {
-      lastErr = err;
-      if (!/50\d|timeout|ENOTFOUND|ECONNRESET|fetch failed/i.test(String(err?.message))) throw err;
-    }
+async function fetchCsvWithRetry(url) {
+  const res = await retryFetch(
+    (signal) => fetch(url, { headers: { Accept: "text/csv" }, signal }),
+    { source: "Texas Water Development Board (Water Data for Texas)", profile: "arcgis", url }
+  );
+  if (!res.ok) {
+    throw new Error(`waterdatafortexas.org rejected: ${res.status} ${res.statusText}`);
   }
-  throw lastErr;
+  return await res.text();
 }
 
 function parseCsv(csv) {

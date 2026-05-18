@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { geocodeAddress } from "../../lib/geocode.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
+import { retryFetch, upstreamErrorText } from "../../lib/retry.js";
 
 /**
  * National Weather Service active alerts for an Austin / Central Texas
@@ -76,11 +77,22 @@ export const austinNwsAlerts = {
     }
 
     const url = `${NWS_BASE}/alerts/active?point=${usedLat},${usedLng}`;
-    const res = await fetch(url, {
-      headers: { "User-Agent": UA, Accept: "application/geo+json" },
-    });
+    let res;
+    try {
+      res = await retryFetch(
+        (signal) => fetch(url, { headers: { "User-Agent": UA, Accept: "application/geo+json" }, signal }),
+        { source: "National Weather Service (api.weather.gov)", profile: "fast", url }
+      );
+    } catch (err) {
+      return {
+        content: [
+          { type: "text", text: upstreamErrorText(err, { toolName: "austin_nws_alerts" }) + `\n\n${ATTRIBUTION_TAG}` },
+        ],
+        isError: true,
+      };
+    }
     if (!res.ok) {
-      throw new Error(`NWS API failed: ${res.status} ${res.statusText}`);
+      throw new Error(`NWS API rejected: ${res.status} ${res.statusText}`);
     }
     const data = await res.json();
     const features = Array.isArray(data?.features) ? data.features : [];
