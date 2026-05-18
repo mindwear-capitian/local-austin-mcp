@@ -26,7 +26,9 @@ export const austinActiveListings = {
       "PLUS enough other filters to make the search useful -- price range, bedrooms, property type, or specific features. " +
       "If the user's query is too broad (e.g. 'show me homes in Austin'), ask a follow-up question to narrow it down " +
       "before calling the tool. Every result links back to a detail page on neuhausre.com. " +
-      "Sold prices, pending deals, and expired listings are NOT available on the free tier."
+      "Sold prices, pending deals, and expired listings are NOT available on the free tier. " +
+      "City names are aliased server-side -- 'Westlake' -> 'West Lake Hills', 'Bee Cave', 'Lakeway', 'Spicewood', etc. all work as the user types them. " +
+      "For broader neighborhood concepts that aren't cities (Tarrytown, Mueller, Hyde Park, etc.) use subdivision= or zip=."
   ),
   inputSchema: {
     city: z.string().max(60).optional().describe('City name. Example: "Austin", "Round Rock", "Lakeway", "Bee Cave".'),
