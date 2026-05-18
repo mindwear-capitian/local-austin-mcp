@@ -48,12 +48,15 @@ Once installed, ask Claude things like:
 - *"What did Ed Neuhaus write about the Austin market in 2026?"*
 - *"Is there an active flood-zone alert for 78731 right now?"*
 - *"Pull TCAD on 1234 Main St in Round Rock."*
+- *"What library branch is closest to 78704? Hours and amenities?"*
+- *"How many APD use-of-force incidents were reported in the last month?"*
+- *"Where's the nearest fire station to my property?"*
 
 Claude figures out which tool to call, queries the authoritative source live, and returns a `source_url` so you can verify.
 
 ---
 
-## Tools (26 live)
+## Tools (30 live)
 
 ### Real Estate (provided by Neuhaus Realty Group — free, no login)
 
@@ -91,6 +94,10 @@ Claude figures out which tool to call, queries the authoritative source live, an
 | `austin_city_budget` | City of Austin Open Budget — expense data by department, fund, fiscal year. |
 | `austin_district_lookup` | Given an address: returns council district, school district, ESD, voter precinct, neighborhood plan. |
 | `tea_schools` | TEA school + AISD attendance assignment. |
+| `austin_libraries` | Austin Public Library branch directory — find a branch by name, address, or council district. Includes amenity flags (wifi, computers, training rooms). |
+| `austin_parks` | City of Austin parks — search by council district, address, or park type. Returns parcel address, park type (Neighborhood / Greenbelt / Pool / Preserve), and development status. |
+| `austin_fire_stations` | AFD + Travis County ESD fire station directory — find the nearest station to a property. Useful for ISO rating + insurance underwriting context. |
+| `austin_police_data` | Unified APD reporting tool: `type=arrests` (charges/dates/demographics), `type=use_of_force` (force level/weapons/injury), or `type=dispatch` (911 CAD incidents with priority + problem category). |
 
 ### Environment
 
@@ -123,7 +130,7 @@ Every tool returns data from an **official, authoritative source**. No third-par
 | Property records | Travis CAD (True Prodigy API), Williamson + Hays CAD (ArcGIS REST) |
 | Tax records | Travis County Tax Office |
 | Special districts | Texas Comptroller Special Purpose Districts |
-| Permits + zoning + 311 + crime + code violations + budget + council votes + AFD | data.austintexas.gov (Socrata SODA API) |
+| Permits + zoning + 311 + crime + code violations + budget + council votes + AFD + libraries + parks + fire stations + APD arrests / use of force / CAD dispatch | data.austintexas.gov (Socrata SODA API) |
 | Flood zones | FEMA NFHL + Austin floodplain GIS |
 | District boundaries | City of Austin + Travis County ArcGIS open-data services |
 | Schools | Texas Education Agency + AISD |
