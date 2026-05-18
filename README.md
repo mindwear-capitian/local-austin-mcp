@@ -130,16 +130,22 @@ Confirmed source families:
 ## Status
 
 **Phase 0: Repo + License + Plan** ✅
-**Phase 1: Property core** -- in progress (7/10 tools live)
-**Phase 2: Civic + Public** -- 2/N live
-**Phase 3: Daily Life + Transit** -- planned
-**Phase 4: Visitor + Environment** -- planned
+**Phase 1: Property core** -- 9/10 tools live (Travis Clerk deeds permanently deferred; TREC skipped)
+**Phase 2: Civic + Public** -- 7 tools live (311, crime, AFD, TEA schools, council votes, city budget, district lookup)
+**Phase 3: Daily Life + Transit** -- planned (Cap Metro intentionally skipped)
+**Phase 4: Visitor + Environment** -- 2 tools live (NWS alerts, Lake Travis level). EPA AQI deferred -- AirNow gates behind a free API key.
+
+### Environment Variables
+
+| Var | Used By | Required? | Notes |
+|-----|---------|:---:|-------|
+| `AUSTIN_SODA_APP_TOKEN` | All Socrata-backed tools (311, AFD, crime, council, budget, permits, code cases) | optional | Free signup at data.austintexas.gov. Raises rate-limit ceiling. |
 
 ### Deferred
 
-- **`travis_county_clerk_deeds`** -- requires browser automation against a JavaScript-rendered ASP.NET portal (tccsearch.org). Will integrate via the existing `/srv/playwright-scraper` service on NeuhausRE VPS in a later phase rather than spawning a browser per MCP call.
-- **`mud_pid_lookup`** -- planned for Phase 1 once a stable Comptroller API path is confirmed.
-- **`fema_flood`** -- planned for Phase 1 (FEMA NFHL ArcGIS).
+- **`travis_county_clerk_deeds`** -- **permanently deferred.** tccsearch.org is a JavaScript-rendered ASP.NET portal with no public API. A working browser-driven path already exists for Ed in the `deed-lookup` skill on Mac; replicating it in MCP would require an always-on Playwright service on the VPS for marginal benefit. Revisit only if a public API ships.
+- **`trec_license_verification`** -- skipped for now. Low value vs. cost.
+- **`austin_air_quality`** -- deferred. EPA AirNow, OpenAQ v3, and PurpleAir all gate behind API keys. WAQI works without one but aggregates third-party sources, which violates the "authoritative source only" rule. Revisit once we sign up for an AirNow key.
 
 ---
 

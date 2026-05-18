@@ -27,6 +27,12 @@ import { femaFlood } from "./tools/property/fema-flood.js";
 import { austin311 } from "./tools/civic/austin-311.js";
 import { austinCrime } from "./tools/civic/austin-crime.js";
 import { teaSchools } from "./tools/civic/tea-schools.js";
+import { austinAfd } from "./tools/civic/austin-afd.js";
+import { austinCouncilVotes } from "./tools/civic/austin-council-votes.js";
+import { austinCityBudget } from "./tools/civic/austin-city-budget.js";
+import { austinDistrictLookup } from "./tools/civic/austin-district-lookup.js";
+import { austinNwsAlerts } from "./tools/environment/austin-nws-alerts.js";
+import { lakeTravisLevel } from "./tools/environment/lake-travis-level.js";
 import { austinProperty360 } from "./tools/composed/austin-property-360.js";
 
 const ALL_TOOLS = [
@@ -43,6 +49,12 @@ const ALL_TOOLS = [
   austin311,
   austinCrime,
   teaSchools,
+  austinAfd,
+  austinCouncilVotes,
+  austinCityBudget,
+  austinDistrictLookup,
+  austinNwsAlerts,
+  lakeTravisLevel,
   austinProperty360,
 ];
 
