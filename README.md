@@ -51,12 +51,16 @@ Once installed, ask Claude things like:
 - *"What library branch is closest to 78704? Hours and amenities?"*
 - *"How many APD use-of-force incidents were reported in the last month?"*
 - *"Where's the nearest fire station to my property?"*
+- *"What's the latest health inspection score for Franklin Barbecue?"*
+- *"Any tree-removal permits ever issued at this address?"*
+- *"What TxDOT projects are scheduled on I-35 in Travis County?"*
+- *"Has Austin Animal Center received any lost calicos near 78704 this month?"*
 
 Claude figures out which tool to call, queries the authoritative source live, and returns a `source_url` so you can verify.
 
 ---
 
-## Tools (30 live)
+## Tools (35 live)
 
 ### Real Estate (provided by Neuhaus Realty Group — free, no login)
 
@@ -81,6 +85,7 @@ Claude figures out which tool to call, queries the authoritative source live, an
 | `austin_permits` | Full permit history for any City of Austin address. |
 | `austin_code_cases` | Active and historical code-compliance cases. |
 | `austin_zoning` | Austin zoning + lot dimensions + plat lookup. |
+| `austin_tree_permits` | City of Austin issued tree permits — removal / heritage / root-zone work. Useful for pre-listing prep and buyer due-diligence. |
 | `austin_property_360` | Composed: one address → CAD + tax + flood + permits + code + 311 + zoning in one shot. |
 
 ### Civic + Public Safety
@@ -98,6 +103,10 @@ Claude figures out which tool to call, queries the authoritative source live, an
 | `austin_parks` | City of Austin parks — search by council district, address, or park type. Returns parcel address, park type (Neighborhood / Greenbelt / Pool / Preserve), and development status. |
 | `austin_fire_stations` | AFD + Travis County ESD fire station directory — find the nearest station to a property. Useful for ISO rating + insurance underwriting context. |
 | `austin_police_data` | Unified APD reporting tool: `type=arrests` (charges/dates/demographics), `type=use_of_force` (force level/weapons/injury), or `type=dispatch` (911 CAD incidents with priority + problem category). |
+| `austin_restaurant_inspections` | Austin / Travis County food establishment inspection scores (0-100). Filter by name, address, zip, score range, date. |
+| `austin_roadway_work_zones` | Active construction / closures from City of Austin Transportation & Public Works. |
+| `austin_animal_center` | Austin Animal Center intakes + outcomes — lost-pet search by found-address + breed, adoption availability. |
+| `austin_txdot_projects` | TxDOT highway construction / maintenance projects in the Austin district. Filter by highway, county, work type. |
 
 ### Environment
 
@@ -130,7 +139,8 @@ Every tool returns data from an **official, authoritative source**. No third-par
 | Property records | Travis CAD (True Prodigy API), Williamson + Hays CAD (ArcGIS REST) |
 | Tax records | Travis County Tax Office |
 | Special districts | Texas Comptroller Special Purpose Districts |
-| Permits + zoning + 311 + crime + code violations + budget + council votes + AFD + libraries + parks + fire stations + APD arrests / use of force / CAD dispatch | data.austintexas.gov (Socrata SODA API) |
+| Permits + zoning + 311 + crime + code violations + budget + council votes + AFD + libraries + parks + fire stations + APD arrests / use of force / CAD dispatch + restaurant inspections + tree permits + roadway work zones + animal shelter intakes/outcomes | data.austintexas.gov (Socrata SODA API) |
+| TxDOT highway projects | TxDOT Open Data (ArcGIS) |
 | Flood zones | FEMA NFHL + Austin floodplain GIS |
 | District boundaries | City of Austin + Travis County ArcGIS open-data services |
 | Schools | Texas Education Agency + AISD |
