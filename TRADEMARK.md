@@ -37,6 +37,6 @@ You may refer to the marks factually for attribution purposes, including:
 For any use of the marks beyond what is described above, you must obtain
 written permission in advance:
 
-**Ed Neuhaus**
-Neuhaus Realty Group LLC
-Ed@NeuhausRE.com
+**Neuhaus Realty Group LLC**
+Austin, Texas
+https://neuhausre.com

@@ -8,7 +8,7 @@ import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
  * no address or coordinates are supplied.
  */
 const NWS_BASE = "https://api.weather.gov";
-const UA = "local-austin-mcp (ed@neuhausre.com)";
+const UA = "local-austin-mcp (https://neuhausre.com)";
 
 // Downtown Austin lat/lng — used when no address/lat-lng supplied.
 const DEFAULT_LAT = 30.27;

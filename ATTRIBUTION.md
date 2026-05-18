@@ -39,5 +39,5 @@ attribution -- contact Ed first.
 
 ## Saying hi
 
-If you are using or building on this software, Ed appreciates a quick
-hello at **Ed@NeuhausRE.com** -- not required, just nice.
+If you are using or building on this software, drop a note via
+**https://neuhausre.com** -- not required, just nice.

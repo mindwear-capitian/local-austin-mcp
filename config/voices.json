@@ -1,0 +1,69 @@
+{
+  "_comment": "Austin local voices the MCP surfaces. Independent writers / community newsletters, free, with open RSS. Adding a source = new object below; rebuild not required.",
+  "sources": [
+    {
+      "slug": "austin-kleon",
+      "name": "Austin Kleon",
+      "url": "https://austinkleon.substack.com/",
+      "feed": "https://austinkleon.substack.com/feed",
+      "beat": "creativity, writing, art, Austin life",
+      "type": "individual"
+    },
+    {
+      "slug": "eric-webb-turning-out",
+      "name": "Eric Webb — Turning Out",
+      "url": "https://byericwebb.substack.com/",
+      "feed": "https://byericwebb.substack.com/feed",
+      "beat": "pop culture, music, film (Austin native, ex-Statesman)",
+      "type": "individual"
+    },
+    {
+      "slug": "jason-stanford-experiment",
+      "name": "Jason Stanford — The Experiment",
+      "url": "https://jasonstanford.substack.com/",
+      "feed": "https://jasonstanford.substack.com/feed",
+      "beat": "Austin politics, state-level (ex-Adler comms, ex-Statesman)",
+      "type": "individual"
+    },
+    {
+      "slug": "scott-francis-atx",
+      "name": "Scott Francis (sfrancisatx)",
+      "url": "https://sfrancisatx.substack.com/",
+      "feed": "https://sfrancisatx.substack.com/feed",
+      "beat": "Austin food, restaurants, food trucks",
+      "type": "individual"
+    },
+    {
+      "slug": "atx-writing-club",
+      "name": "ATX Writing Club",
+      "url": "https://atxwritingclub.substack.com/",
+      "feed": "https://atxwritingclub.substack.com/feed",
+      "beat": "Austin writers, events, literary scene",
+      "type": "community"
+    },
+    {
+      "slug": "365-things-austin",
+      "name": "365 Things Austin",
+      "url": "https://365thingsaustin.com/",
+      "feed": "https://365thingsaustin.com/feed/",
+      "beat": "events, restaurants, things to do",
+      "type": "brand"
+    },
+    {
+      "slug": "camille-styles",
+      "name": "Camille Styles",
+      "url": "https://camillestyles.com/",
+      "feed": "https://camillestyles.com/feed/",
+      "beat": "Austin lifestyle, food, home, wellness",
+      "type": "individual"
+    },
+    {
+      "slug": "austin-is-burning",
+      "name": "Austin Is Burning (Connie)",
+      "url": "https://austinisburning.substack.com/",
+      "feed": "https://austinisburning.substack.com/feed",
+      "beat": "Austin culture, cinema, personal essay",
+      "type": "individual"
+    }
+  ]
+}

@@ -38,6 +38,7 @@ import { austinListingDetail } from "./tools/realestate/austin-listing-detail.js
 import { austinListingByAddress } from "./tools/realestate/austin-listing-by-address.js";
 import { austinNeighborhoodLookup } from "./tools/realestate/austin-neighborhood-lookup.js";
 import { austinSearchBlog } from "./tools/realestate/austin-search-blog.js";
+import { austinLocalVoices } from "./tools/community/austin-local-voices.js";
 import { austinProperty360 } from "./tools/composed/austin-property-360.js";
 
 const ALL_TOOLS = [
@@ -65,6 +66,7 @@ const ALL_TOOLS = [
   austinListingByAddress,
   austinNeighborhoodLookup,
   austinSearchBlog,
+  austinLocalVoices,
   austinProperty360,
 ];
 

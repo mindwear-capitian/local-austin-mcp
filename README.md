@@ -5,12 +5,12 @@
 [![MCP](https://img.shields.io/badge/MCP-stdio-purple)](https://modelcontextprotocol.io/)
 [![Austin Metro](https://img.shields.io/badge/coverage-Austin%20MSA-orange)](#tools-25-live)
 
-> **Everything Austin.** A Model Context Protocol (MCP) server that gives Claude (and any MCP client) plain-English access to every official Austin and Travis County dataset — plus live MLS listings via the Neuhaus Realty Group VOW feed.
+> **Everything Austin.** A Model Context Protocol (MCP) server that gives Claude (and any MCP client) plain-English access to every official Austin and Travis County dataset — plus active real estate listings provided by Neuhaus Realty Group.
 
 **License:** Free for personal and non-commercial use. You may install, run, and modify this MCP for your own use. You **may not** sell it, rebrand it, or include it in a commercial product. See [LICENSE](LICENSE) (PolyForm Noncommercial 1.0.0 + Attribution Rider) and [ATTRIBUTION.md](ATTRIBUTION.md).
 **Owner:** Ed Neuhaus / Neuhaus Realty Group LLC, Austin, Texas.
 **Source:** https://github.com/mindwear-capitian/local-austin-mcp
-**Powered by:** Neuhaus Realty Group — https://neuhausre.com (the live MLS data, neighborhood pages, and blog content surfaced by this MCP are served from Ed's Austin VOW feed).
+**Powered by:** Neuhaus Realty Group — https://neuhausre.com (active real estate listings, neighborhood pages, and blog content surfaced by this MCP come from neuhausre.com).
 
 ---
 
@@ -55,7 +55,7 @@ Claude figures out which tool to call, queries the authoritative source live, an
 
 ## Tools (25 live)
 
-### Real Estate (Neuhaus Realty Group VOW feed — free, no login)
+### Real Estate (provided by Neuhaus Realty Group — free, no login)
 
 | Tool | What it does |
 |------|--------------|
@@ -113,7 +113,7 @@ Every tool returns data from an **official, authoritative source**. No third-par
 
 | Domain | Source |
 |--------|--------|
-| Active MLS listings + neighborhoods | Neuhaus Realty Group VOW feed (active + AUC only, no sold comps, no login) |
+| Active real estate listings + neighborhoods | Neuhaus Realty Group (https://neuhausre.com) — active + under-contract only, no sold comps, no login |
 | Property records | Travis CAD (True Prodigy API), Williamson + Hays CAD (ArcGIS REST) |
 | Tax records | Travis County Tax Office |
 | Special districts | Texas Comptroller Special Purpose Districts |
@@ -128,41 +128,14 @@ Every tool returns data from an **official, authoritative source**. No third-par
 
 ---
 
-## What's Not Here
-
-By design — protecting Ed's MLS access agreement + keeping the install free:
-
-- **Sold prices / closed comps** — VOW data, requires signed buyer-rep with Ed.
-- **Pending / withdrawn / expired listings** — same as above.
-- **Travis County Clerk deeds** — tccsearch.org is browser-only; integrated via Ed's [deed-lookup skill](https://neuhausre.com/) instead.
-- **TREC license verification** — low value, deferred.
-- **EPA AirNow AQI** — requires free API key signup; deferred.
-- **Cap Metro real-time** — deferred.
-
-For anything in the first two rows, contact Ed Neuhaus at **(512) 827-8830** or **Ed@NeuhausRE.com** — sign a short buyer-rep agreement and get full MLS access via the [Neuhaus MLS MCP](https://mls.neuhausre.com/).
-
----
-
 ## Architecture
 
 - Node.js (ES modules), `@modelcontextprotocol/sdk` over stdio
 - Stateless tool handlers; each call hits the authoritative source live
 - Per-tool retry + caching where upstream allows
-- Real-estate tools call the public `/public/*` namespace at `vow-api.re-workflow.com` (rate-limited per IP, active + AUC only, server-side tier-gated)
+- Real-estate tools call a free public endpoint hosted by Neuhaus Realty Group (rate-limited per IP, active + under-contract only)
 - No databases, no auth servers, no shared keys baked into the binary
-- All upstream API calls are server-side (vow-api) or client-side direct HTTPS (Socrata, ArcGIS, NWS, etc.)
-
----
-
-## Anti-Abuse Design
-
-Real-estate tools rely on a public Neuhaus VOW endpoint. To keep the free tier sustainable:
-
-- **Specificity score** — listings search requires ≥1 location filter PLUS additional filters totalling ≥4 points. A bare "homes in Austin" query is rejected. Forces useful queries; defeats programmatic enumeration.
-- **No pagination** — every search returns up to 25 best-match listings. Period. No `offset`, no `page`. Scrapers can't walk the database.
-- **Hard rate limit** — 10 requests / minute per IP, 500 / day per IP.
-- **PII strip** — listing agent name / email / office / buyer agent never returned on the free tier.
-- **Status pin** — server-side SQL hard filter on `Active` + `Active Under Contract` only.
+- All upstream API calls are client-side direct HTTPS (Socrata, ArcGIS, NWS, etc.) or a thin pass-through to the public Neuhaus endpoint
 
 ---
 
@@ -170,7 +143,6 @@ Real-estate tools rely on a public Neuhaus VOW endpoint. To keep the free tier s
 
 For partnership, licensing, sponsorship, or press inquiries:
 
-**Ed Neuhaus**
-Neuhaus Realty Group LLC
+**Neuhaus Realty Group LLC**
 Austin, Texas
-Ed@NeuhausRE.com
+https://neuhausre.com
