@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, sodaTextLike, sodaTextEq } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -35,17 +35,14 @@ export const austinLibraries = {
       .union([z.number().int().min(0).max(10), z.string()])
       .optional()
       .describe('Council district 1-10.'),
-    limit: z.number().int().min(1).max(50).optional(),
+    limit: z.number().int().min(1).max(50).default(25),
   },
   async handler({ name, address, district, limit } = {}) {
     const where = [];
-    if (name) {
-      const safe = name.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(name) like '%${safe}%'`);
-    }
+    if (name) where.push(sodaTextLike("name", name));
     if (address) where.push(sodaAddressLike("address", address));
     if (district !== undefined && district !== null) {
-      where.push(`district = '${String(district).replace(/'/g, "''")}'`);
+      where.push(sodaTextEq("district", district));
     }
     const rows = await sodaQuery(DATASET, {
       base: BASE,

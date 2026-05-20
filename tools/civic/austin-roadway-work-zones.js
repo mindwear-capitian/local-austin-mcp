@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery } from "../../lib/soda.js";
+import { sodaQuery, sodaTextLike } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -24,18 +24,12 @@ export const austinRoadwayWorkZones = {
     road: z.string().min(2).optional().describe('Road / street name (fuzzy contains).'),
     event_type: z.string().min(2).optional().describe('Event type filter (e.g. "construction", "maintenance", "event").'),
     active_only: z.boolean().optional().describe('Only return work zones currently in their active window (default true).'),
-    limit: z.number().int().min(1).max(100).optional(),
+    limit: z.number().int().min(1).max(100).default(25),
   },
   async handler({ road, event_type, active_only, limit } = {}) {
     const where = [];
-    if (road) {
-      const safe = road.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(road_names) like '%${safe}%'`);
-    }
-    if (event_type) {
-      const safe = event_type.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(event_type) like '%${safe}%'`);
-    }
+    if (road) where.push(sodaTextLike("road_names", road));
+    if (event_type) where.push(sodaTextLike("event_type", event_type));
     // Default to active-only unless caller explicitly passes false.
     const wantActive = active_only !== false;
     if (wantActive) {

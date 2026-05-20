@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, sodaTextLike } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -32,14 +32,11 @@ export const austinRestaurantInspections = {
     max_score: z.number().int().min(0).max(100).optional()
       .describe('Upper bound on inspection score (e.g. 80 to find low-scoring inspections).'),
     since_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    limit: z.number().int().min(1).max(100).optional(),
+    limit: z.number().int().min(1).max(100).default(25),
   },
   async handler({ name, address, zip, min_score, max_score, since_date, limit } = {}) {
     const where = [];
-    if (name) {
-      const safe = name.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(restaurant_name) like '%${safe}%'`);
-    }
+    if (name) where.push(sodaTextLike("restaurant_name", name));
     if (address) where.push(sodaAddressLike("address", address));
     if (zip) where.push(`zip_code = '${zip}'`);
     if (min_score !== undefined && min_score !== null) where.push(`score >= ${Number(min_score)}`);

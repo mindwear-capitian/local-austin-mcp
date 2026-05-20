@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["20", "22"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests
+        run: npm test
+
+      - name: MCP handshake (init + tools/list)
+        # Lightweight: just verifies the server boots, registers tools, and
+        # responds to initialize + tools/list. Skips live-API smoke calls
+        # so CI doesn't depend on TCAD / SODA / FEMA being up.
+        run: |
+          set -e
+          OUTPUT=$(timeout 8s node -e '
+            const { spawn } = require("node:child_process");
+            const srv = spawn("node", ["index.js"], { stdio: ["pipe", "pipe", "inherit"] });
+            let buf = "";
+            srv.stdout.on("data", c => buf += c.toString());
+            const send = m => srv.stdin.write(JSON.stringify(m) + "\n");
+            send({ jsonrpc:"2.0", id:1, method:"initialize", params:{ protocolVersion:"2024-11-05", capabilities:{}, clientInfo:{name:"ci",version:"0"} } });
+            setTimeout(() => {
+              send({ jsonrpc:"2.0", method:"notifications/initialized", params:{} });
+              send({ jsonrpc:"2.0", id:2, method:"tools/list", params:{} });
+              setTimeout(() => {
+                process.stdout.write(buf);
+                srv.kill();
+                process.exit(0);
+              }, 800);
+            }, 300);
+          ')
+          echo "$OUTPUT" | grep -q '"tools"' || (echo "tools/list response missing" && exit 1)
+          echo "Handshake OK."

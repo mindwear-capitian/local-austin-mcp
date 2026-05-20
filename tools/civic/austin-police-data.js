@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery } from "../../lib/soda.js";
+import { sodaQuery, sodaTextEq } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -128,7 +128,7 @@ export const austinPoliceData = {
       .regex(/^\d{4}-\d{2}-\d{2}$/)
       .optional()
       .describe('ISO date (YYYY-MM-DD). Only return records on or before.'),
-    limit: z.number().int().min(1).max(100).optional(),
+    limit: z.number().int().min(1).max(100).default(25),
   },
   async handler({ type, search, council_district, sector, since_date, until_date, limit } = {}) {
     const ds = DATASETS[type];
@@ -142,11 +142,10 @@ export const austinPoliceData = {
     if (since_date) where.push(`${ds.date_field} >= '${since_date}T00:00:00.000'`);
     if (until_date) where.push(`${ds.date_field} <= '${until_date}T23:59:59.999'`);
     if (council_district !== undefined && council_district !== null && type === "dispatch") {
-      where.push(`council_district = '${String(council_district).replace(/'/g, "''")}'`);
+      where.push(sodaTextEq("council_district", council_district));
     }
     if (sector && ds.sector_field) {
-      const safe = sector.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(${ds.sector_field}) = '${safe}'`);
+      where.push(sodaTextEq(`upper(${ds.sector_field})`, String(sector).toUpperCase()));
     }
     const queryParams = {
       base: BASE,

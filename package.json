@@ -8,7 +8,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "node test/mcp-handshake.js",
+    "test": "node --test 'test/unit/*.test.js'",
+    "test:handshake": "node test/mcp-handshake.js",
+    "test:unit": "node --test 'test/unit/*.test.js'",
     "test:smoke:tcad": "node test/smoke-tcad.js",
     "test:smoke:permits": "node test/smoke-permits.js",
     "test:smoke:code": "node test/smoke-code-cases.js",
@@ -34,8 +36,13 @@
   ],
   "author": "Ed Neuhaus / Neuhaus Realty Group LLC",
   "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://neuhausre.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mindwear-capitian/local-austin-mcp"
+  },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

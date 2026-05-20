@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery } from "../../lib/soda.js";
+import { sodaQuery, sodaTextEq } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -75,7 +75,7 @@ export const teaSchools = {
       .int()
       .min(1)
       .max(100)
-      .optional()
+      .default(25)
       .describe("Max results (default 25)."),
   },
   async handler(args) {
@@ -93,7 +93,7 @@ export const teaSchools = {
     if (district) ratingsWhere.push(`upper(district) like '%${esc(district)}%'`);
     if (county) ratingsWhere.push(`upper(county) like '%${esc(county)}%'`);
     if (rating) ratingsWhere.push(`overall_rating = '${rating}'`);
-    if (school_type) ratingsWhere.push(`school_type = '${school_type.replace(/'/g, "''")}'`);
+    if (school_type) ratingsWhere.push(sodaTextEq("school_type", school_type));
 
     const ratings = await sodaQuery(RATINGS_DATASET, {
       base: BASE,

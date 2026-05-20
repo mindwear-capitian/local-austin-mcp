@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, sodaTextLike, sodaTextEq } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -25,22 +25,16 @@ export const austinFireStations = {
     name: z.string().min(2).optional().describe('Station name (fuzzy).'),
     address: z.string().min(2).optional().describe('Address (fuzzy contains).'),
     jurisdiction: z.string().min(2).optional().describe('Filter by jurisdiction (e.g. "AFD", "Travis County ESD 4").'),
-    limit: z.number().int().min(1).max(50).optional(),
+    limit: z.number().int().min(1).max(50).default(25),
   },
   async handler({ station_number, name, address, jurisdiction, limit } = {}) {
     const where = [];
     if (station_number !== undefined && station_number !== null) {
-      where.push(`station_number = '${String(station_number).replace(/'/g, "''")}'`);
+      where.push(sodaTextEq("station_number", station_number));
     }
-    if (name) {
-      const safe = name.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(name) like '%${safe}%'`);
-    }
+    if (name) where.push(sodaTextLike("name", name));
     if (address) where.push(sodaAddressLike("address", address));
-    if (jurisdiction) {
-      const safe = jurisdiction.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(jurisdiction) like '%${safe}%'`);
-    }
+    if (jurisdiction) where.push(sodaTextLike("jurisdiction", jurisdiction));
     const rows = await sodaQuery(DATASET, {
       base: BASE,
       where: where.length ? where.join(" AND ") : undefined,

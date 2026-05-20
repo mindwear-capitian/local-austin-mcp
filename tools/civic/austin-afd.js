@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, sodaTextLike } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -47,16 +47,13 @@ export const austinAfd = {
       .int()
       .min(1)
       .max(200)
-      .optional()
+      .default(25)
       .describe("Max results (default 25)."),
   },
   async handler({ address, issue_type, active_only, limit }) {
     const where = [];
     if (address) where.push(sodaAddressLike("address", address));
-    if (issue_type) {
-      const safe = issue_type.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(issue_reported) like '%${safe}%'`);
-    }
+    if (issue_type) where.push(sodaTextLike("issue_reported", issue_type));
     if (active_only) where.push(`upper(traffic_report_status) = 'ACTIVE'`);
 
     if (where.length === 0) {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, encodeCursor, decodeCursor } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -37,7 +37,7 @@ export const austinCodeCases = {
       .int()
       .min(1)
       .max(200)
-      .optional()
+      .default(25)
       .describe("Max results (default 25)."),
     since_year: z
       .number()
@@ -46,22 +46,34 @@ export const austinCodeCases = {
       .max(2100)
       .optional()
       .describe("Only return cases opened on or after this year."),
+    cursor: z
+      .string()
+      .optional()
+      .describe("Opaque pagination cursor from a prior call's structuredContent.nextCursor."),
   },
-  async handler({ address, open_only, limit, since_year }) {
+  async handler({ address, open_only, limit, since_year, cursor }) {
     const where = [sodaAddressLike("address", address)];
     if (open_only) where.push(`upper(status) != 'CLOSED'`);
     if (since_year !== undefined) {
       where.push(`opened_date >= '${since_year}-01-01T00:00:00.000'`);
     }
 
+    const pageSize = limit ?? 25;
+    const offset = decodeCursor(cursor)?.offset ?? 0;
+
     const rows = await sodaQuery(DATASET, {
       base: BASE,
       where: where.join(" AND "),
       order: "opened_date DESC",
-      limit: limit ?? 25,
+      limit: pageSize + 1,
+      offset,
     });
 
-    if (rows.length === 0) {
+    const hasMore = rows.length > pageSize;
+    const page = hasMore ? rows.slice(0, pageSize) : rows;
+    const nextCursor = hasMore ? encodeCursor(offset + pageSize) : null;
+
+    if (page.length === 0) {
       const filterDesc =
         (open_only ? " open" : "") +
         (since_year ? ` since ${since_year}` : "");
@@ -74,18 +86,19 @@ export const austinCodeCases = {
               `${ATTRIBUTION_TAG}`,
           },
         ],
+        structuredContent: { query: address, open_only, since_year, count: 0, results: [], nextCursor: null },
       };
     }
 
-    const normalized = rows.map(normalizeCase);
+    const normalized = page.map(normalizeCase);
 
     return {
       content: [
-        { type: "text", text: formatResults(address, normalized, open_only, since_year) },
+        { type: "text", text: formatResults(address, normalized, open_only, since_year, nextCursor) },
         {
           type: "text",
           text: JSON.stringify(
-            { query: address, open_only, since_year, count: normalized.length, results: normalized },
+            { query: address, open_only, since_year, count: normalized.length, results: normalized, nextCursor, offset },
             null,
             2
           ),
@@ -127,7 +140,7 @@ function dateOnly(s) {
   return String(s).slice(0, 10);
 }
 
-function formatResults(query, results, open_only, since_year) {
+function formatResults(query, results, open_only, since_year, nextCursor) {
   const filterParts = [];
   if (open_only) filterParts.push("open only");
   if (since_year) filterParts.push(`since ${since_year}`);
@@ -173,6 +186,10 @@ function formatResults(query, results, open_only, since_year) {
     lines.push("");
   }
 
+  if (nextCursor) {
+    lines.push("");
+    lines.push(`*More cases available. Re-call with \`cursor: "${nextCursor}"\` for the next page.*`);
+  }
   lines.push(`---`);
   lines.push(`Source: City of Austin Code Department (${SOURCE_URL})`);
   lines.push(ATTRIBUTION_TAG);

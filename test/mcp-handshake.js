@@ -91,14 +91,14 @@ try {
     jsonrpc: "2.0",
     id: 4,
     method: "tools/call",
-    params: { name: "travis_cad_search", arguments: { address: "9501 san lucas", limit: 1 } },
+    params: { name: "austin_travis_cad", arguments: { address: "9501 san lucas", limit: 1 } },
   });
-  const cadRes = await expect(4, "travis_cad_search", 15000);
+  const cadRes = await expect(4, "austin_travis_cad", 15000);
   const cadText = cadRes.result?.content?.[0]?.text ?? "";
-  console.log("\ntravis_cad_search/9501 san lucas first 300:");
+  console.log("\naustin_travis_cad/9501 san lucas first 300:");
   console.log(cadText.slice(0, 300));
   if (!cadText.includes("neuhausre.com")) {
-    throw new Error("Attribution tag missing from travis_cad_search output");
+    throw new Error("Attribution tag missing from austin_travis_cad output");
   }
 
   // Call austin_permits
@@ -181,14 +181,14 @@ try {
     jsonrpc: "2.0",
     id: 10,
     method: "tools/call",
-    params: { name: "travis_tax_office", arguments: { address: "9501 san lucas" } },
+    params: { name: "austin_travis_tax", arguments: { address: "9501 san lucas" } },
   });
-  const taxRes = await expect(10, "travis_tax_office", 30000);
+  const taxRes = await expect(10, "austin_travis_tax", 30000);
   const taxText = taxRes.result?.content?.[0]?.text ?? "";
-  console.log("\ntravis_tax_office/9501 san lucas first 400:");
+  console.log("\naustin_travis_tax/9501 san lucas first 400:");
   console.log(taxText.slice(0, 400));
   if (!taxText.includes("neuhausre.com")) {
-    throw new Error("Attribution tag missing from travis_tax_office output");
+    throw new Error("Attribution tag missing from austin_travis_tax output");
   }
 
   // Call mud_pid_lookup
@@ -196,14 +196,14 @@ try {
     jsonrpc: "2.0",
     id: 11,
     method: "tools/call",
-    params: { name: "mud_pid_lookup", arguments: { address: "9501 san lucas" } },
+    params: { name: "austin_mud_pid", arguments: { address: "9501 san lucas" } },
   });
-  const mudRes = await expect(11, "mud_pid_lookup", 30000);
+  const mudRes = await expect(11, "austin_mud_pid", 30000);
   const mudText = mudRes.result?.content?.[0]?.text ?? "";
-  console.log("\nmud_pid_lookup/9501 san lucas first 400:");
+  console.log("\naustin_mud_pid/9501 san lucas first 400:");
   console.log(mudText.slice(0, 400));
   if (!mudText.includes("neuhausre.com")) {
-    throw new Error("Attribution tag missing from mud_pid_lookup output");
+    throw new Error("Attribution tag missing from austin_mud_pid output");
   }
 
   // Call fema_flood
@@ -211,14 +211,14 @@ try {
     jsonrpc: "2.0",
     id: 12,
     method: "tools/call",
-    params: { name: "fema_flood", arguments: { address: "9501 San Lucas Dr Austin TX" } },
+    params: { name: "austin_fema_flood", arguments: { address: "9501 San Lucas Dr Austin TX" } },
   });
-  const floodRes = await expect(12, "fema_flood", 20000);
+  const floodRes = await expect(12, "austin_fema_flood", 20000);
   const floodText = floodRes.result?.content?.[0]?.text ?? "";
-  console.log("\nfema_flood/9501 san lucas first 400:");
+  console.log("\naustin_fema_flood/9501 san lucas first 400:");
   console.log(floodText.slice(0, 400));
   if (!floodText.includes("neuhausre.com")) {
-    throw new Error("Attribution tag missing from fema_flood output");
+    throw new Error("Attribution tag missing from austin_fema_flood output");
   }
 
   // Call tea_schools
@@ -226,14 +226,14 @@ try {
     jsonrpc: "2.0",
     id: 13,
     method: "tools/call",
-    params: { name: "tea_schools", arguments: { district: "Eanes", limit: 5 } },
+    params: { name: "austin_tea_schools", arguments: { district: "Eanes", limit: 5 } },
   });
-  const teaRes = await expect(13, "tea_schools", 20000);
+  const teaRes = await expect(13, "austin_tea_schools", 20000);
   const teaText = teaRes.result?.content?.[0]?.text ?? "";
-  console.log("\ntea_schools/Eanes first 400:");
+  console.log("\naustin_tea_schools/Eanes first 400:");
   console.log(teaText.slice(0, 400));
   if (!teaText.includes("neuhausre.com")) {
-    throw new Error("Attribution tag missing from tea_schools output");
+    throw new Error("Attribution tag missing from austin_tea_schools output");
   }
 
   // Call austin_property_360 (slow -- 8 parallel upstream calls)

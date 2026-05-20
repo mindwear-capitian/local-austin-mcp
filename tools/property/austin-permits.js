@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, encodeCursor, decodeCursor } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -33,7 +33,7 @@ export const austinPermits = {
       .int()
       .min(1)
       .max(200)
-      .optional()
+      .default(25)
       .describe("Max results (default 25). Use higher for full history."),
     since_year: z
       .number()
@@ -44,20 +44,35 @@ export const austinPermits = {
       .describe(
         "Only return permits issued on or after this year (e.g. 2015). Omit for all history."
       ),
+    cursor: z
+      .string()
+      .optional()
+      .describe(
+        "Opaque pagination cursor returned in structuredContent.nextCursor. " +
+          "Pass back verbatim to fetch the next page."
+      ),
   },
-  async handler({ address, limit, since_year }) {
+  async handler({ address, limit, since_year, cursor }) {
     const where = [sodaAddressLike("original_address1", address)];
     if (since_year !== undefined) {
       where.push(`issue_date >= '${since_year}-01-01T00:00:00.000'`);
     }
 
+    const pageSize = limit ?? 25;
+    const offset = decodeCursor(cursor)?.offset ?? 0;
+
     const rows = await sodaQuery(PERMITS_DATASET, {
       where: where.join(" AND "),
       order: "issue_date DESC",
-      limit: limit ?? 25,
+      limit: pageSize + 1,
+      offset,
     });
 
-    if (rows.length === 0) {
+    const hasMore = rows.length > pageSize;
+    const page = hasMore ? rows.slice(0, pageSize) : rows;
+    const nextCursor = hasMore ? encodeCursor(offset + pageSize) : null;
+
+    if (page.length === 0) {
       return {
         content: [
           {
@@ -70,18 +85,19 @@ export const austinPermits = {
               `different permit systems. ${ATTRIBUTION_TAG}`,
           },
         ],
+        structuredContent: { query: address, since_year, count: 0, results: [], nextCursor: null },
       };
     }
 
-    const normalized = rows.map(normalizePermit);
+    const normalized = page.map(normalizePermit);
 
     return {
       content: [
-        { type: "text", text: formatResults(address, normalized, since_year) },
+        { type: "text", text: formatResults(address, normalized, since_year, nextCursor) },
         {
           type: "text",
           text: JSON.stringify(
-            { query: address, since_year, count: normalized.length, results: normalized },
+            { query: address, since_year, count: normalized.length, results: normalized, nextCursor, offset },
             null,
             2
           ),
@@ -130,7 +146,7 @@ function dateOnly(s) {
   return String(s).slice(0, 10);
 }
 
-function formatResults(query, results, since_year) {
+function formatResults(query, results, since_year, nextCursor) {
   const since = since_year ? ` since ${since_year}` : "";
   const lines = [`# Austin Permits: "${query}"${since} -- ${results.length} permit${results.length === 1 ? "" : "s"}`, ""];
 
@@ -169,6 +185,10 @@ function formatResults(query, results, since_year) {
     lines.push("");
   }
 
+  if (nextCursor) {
+    lines.push("");
+    lines.push(`*More permits available. Re-call with \`cursor: "${nextCursor}"\` for the next page.*`);
+  }
   lines.push(`---`);
   lines.push(`Source: City of Austin Open Data Portal (${SOURCE_URL})`);
   lines.push(ATTRIBUTION_TAG);

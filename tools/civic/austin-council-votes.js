@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery } from "../../lib/soda.js";
+import { sodaQuery, sodaTextLike, sodaTextEq } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -57,21 +57,16 @@ export const austinCouncilVotes = {
       .int()
       .min(1)
       .max(200)
-      .optional()
+      .default(25)
       .describe("Max results (default 25)."),
   },
   async handler({ search, member, district, vote, since_date, limit }) {
     const where = [];
-    if (member) {
-      const safe = member.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(voter_name) like '%${safe}%'`);
-    }
+    if (member) where.push(sodaTextLike("voter_name", member));
     if (district !== undefined && district !== null) {
-      where.push(`voter_district = '${String(district).replace(/'/g, "''")}'`);
+      where.push(sodaTextEq("voter_district", district));
     }
-    if (vote) {
-      where.push(`vote_cast = '${vote.replace(/'/g, "''")}'`);
-    }
+    if (vote) where.push(sodaTextEq("vote_cast", vote));
     if (since_date) {
       where.push(`meeting_date >= '${since_date}T00:00:00.000'`);
     }

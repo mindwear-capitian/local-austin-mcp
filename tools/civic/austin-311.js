@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, sodaTextLike, encodeCursor, decodeCursor } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -57,10 +57,17 @@ export const austin311 = {
       .int()
       .min(1)
       .max(200)
-      .optional()
+      .default(25)
       .describe("Max results (default 25)."),
+    cursor: z
+      .string()
+      .optional()
+      .describe(
+        "Opaque pagination cursor returned in structuredContent.nextCursor. " +
+          "Pass back verbatim to fetch the next page. Omit on first call."
+      ),
   },
-  async handler({ address, request_type, open_only, limit, since_year }) {
+  async handler({ address, request_type, open_only, limit, since_year, cursor }) {
     if (!address && !request_type) {
       return {
         content: [
@@ -76,10 +83,7 @@ export const austin311 = {
 
     const where = [];
     if (address) where.push(sodaAddressLike("sr_location", address));
-    if (request_type) {
-      const safe = request_type.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(sr_type_desc) like '%${safe}%'`);
-    }
+    if (request_type) where.push(sodaTextLike("sr_type_desc", request_type));
     if (open_only) where.push(`upper(sr_status_desc) != 'CLOSED'`);
 
     // Default to last 2 years to keep queries fast. Dataset spans 2014+ and
@@ -87,14 +91,23 @@ export const austin311 = {
     const effectiveSince = since_year ?? new Date().getFullYear() - 2;
     where.push(`sr_created_date >= '${effectiveSince}-01-01T00:00:00.000'`);
 
+    const pageSize = limit ?? 25;
+    const offset = decodeCursor(cursor)?.offset ?? 0;
+
+    // Fetch one extra row to detect "more available" cheaply.
     const rows = await sodaQuery(DATASET, {
       base: BASE,
       where: where.join(" AND "),
       order: "sr_created_date DESC",
-      limit: limit ?? 25,
+      limit: pageSize + 1,
+      offset,
     });
 
-    if (rows.length === 0) {
+    const hasMore = rows.length > pageSize;
+    const page = hasMore ? rows.slice(0, pageSize) : rows;
+    const nextCursor = hasMore ? encodeCursor(offset + pageSize) : null;
+
+    if (page.length === 0) {
       const filterParts = [];
       if (address) filterParts.push(`address "${address}"`);
       if (request_type) filterParts.push(`type "${request_type}"`);
@@ -107,21 +120,22 @@ export const austin311 = {
             text: `No Austin 311 requests found for ${filterParts.join(", ")}. ${ATTRIBUTION_TAG}`,
           },
         ],
+        structuredContent: { query: { address, request_type, open_only, since_year }, count: 0, results: [], nextCursor: null },
       };
     }
 
-    const normalized = rows.map(normalize);
+    const normalized = page.map(normalize);
 
     return {
       content: [
         {
           type: "text",
-          text: formatResults({ address, request_type, open_only, since_year, results: normalized }),
+          text: formatResults({ address, request_type, open_only, since_year, results: normalized, nextCursor }),
         },
         {
           type: "text",
           text: JSON.stringify(
-            { query: { address, request_type, open_only, since_year }, count: normalized.length, results: normalized },
+            { query: { address, request_type, open_only, since_year }, count: normalized.length, results: normalized, nextCursor, offset },
             null,
             2
           ),
@@ -160,7 +174,7 @@ function dateOnly(s) {
   return String(s).slice(0, 10);
 }
 
-function formatResults({ address, request_type, open_only, since_year, results }) {
+function formatResults({ address, request_type, open_only, since_year, results, nextCursor }) {
   const queryParts = [];
   if (address) queryParts.push(`"${address}"`);
   if (request_type) queryParts.push(`type=${request_type}`);
@@ -201,6 +215,10 @@ function formatResults({ address, request_type, open_only, since_year, results }
     lines.push("");
   }
 
+  if (nextCursor) {
+    lines.push("");
+    lines.push(`*More results available. Re-call with \`cursor: "${nextCursor}"\` for the next page.*`);
+  }
   lines.push(`---`);
   lines.push(`Source: City of Austin 311 (${SOURCE_URL})`);
   lines.push(ATTRIBUTION_TAG);

@@ -36,7 +36,7 @@ export const austinZoning = {
       .int()
       .min(1)
       .max(50)
-      .optional()
+      .default(10)
       .describe("Max matches (default 10)."),
   },
   async handler({ address, limit }) {

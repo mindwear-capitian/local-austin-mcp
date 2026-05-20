@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, sodaTextLike, sodaTextEq } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -73,7 +73,7 @@ export const austinAnimalCenter = {
       .optional()
       .describe('Outcome type filter (outcomes only). Example: "Adoption", "Return to Owner", "Transfer".'),
     since_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    limit: z.number().int().min(1).max(100).optional(),
+    limit: z.number().int().min(1).max(100).default(25),
   },
   async handler({ type, animal_type, breed, address, outcome_type, since_date, limit } = {}) {
     const ds = DATASETS[type];
@@ -85,17 +85,12 @@ export const austinAnimalCenter = {
     }
     const where = [];
     if (animal_type) {
-      const safe = animal_type.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(type) = '${safe}'`);
+      where.push(sodaTextEq("upper(type)", String(animal_type).toUpperCase()));
     }
-    if (breed) {
-      const safe = breed.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(primary_breed) like '%${safe}%'`);
-    }
+    if (breed) where.push(sodaTextLike("primary_breed", breed));
     if (address && type === "intakes") where.push(sodaAddressLike("found_address", address));
     if (outcome_type && type === "outcomes") {
-      const safe = outcome_type.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(outcome_type) = '${safe}'`);
+      where.push(sodaTextEq("upper(outcome_type)", String(outcome_type).toUpperCase()));
     }
     if (since_date) where.push(`${ds.date_field} >= '${since_date}T00:00:00.000'`);
 

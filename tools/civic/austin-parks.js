@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, sodaTextLike, sodaTextEq } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -32,24 +32,20 @@ export const austinParks = {
       .min(2)
       .optional()
       .describe('Filter by type. Common values: "Neighborhood Park", "District Park", "Greenbelt", "Pool", "Preserve", "Special District".'),
-    limit: z.number().int().min(1).max(50).optional(),
+    limit: z.number().int().min(1).max(50).default(25),
   },
   async handler({ name, address, district, park_type, limit } = {}) {
     const where = [];
     if (name) {
       // Parks boundary dataset has no "park_name" column. Match against
       // street_name + address which encode the location label.
-      const safe = name.toUpperCase().replace(/'/g, "''");
-      where.push(`(upper(street_name) like '%${safe}%' OR upper(address) like '%${safe}%')`);
+      where.push(`(${sodaTextLike("street_name", name)} OR ${sodaTextLike("address", name)})`);
     }
     if (address) where.push(sodaAddressLike("address", address));
     if (district !== undefined && district !== null) {
-      where.push(`council_district = '${String(district).replace(/'/g, "''")}'`);
+      where.push(sodaTextEq("council_district", district));
     }
-    if (park_type) {
-      const safe = park_type.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(park_type) like '%${safe}%'`);
-    }
+    if (park_type) where.push(sodaTextLike("park_type", park_type));
     const rows = await sodaQuery(DATASET, {
       base: BASE,
       where: where.length ? where.join(" AND ") : undefined,

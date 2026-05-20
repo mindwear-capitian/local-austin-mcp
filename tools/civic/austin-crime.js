@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery } from "../../lib/soda.js";
+import { sodaQuery, sodaTextLike, sodaTextEq, encodeCursor, decodeCursor } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -69,10 +69,14 @@ export const austinCrime = {
       .int()
       .min(1)
       .max(200)
-      .optional()
+      .default(25)
       .describe("Max results (default 25)."),
+    cursor: z
+      .string()
+      .optional()
+      .describe("Opaque pagination cursor from a prior call's structuredContent.nextCursor."),
   },
-  async handler({ council_district, crime_type, category, family_violence_only, since_date, limit }) {
+  async handler({ council_district, crime_type, category, family_violence_only, since_date, limit, cursor }) {
     if (!council_district && !crime_type && !category && !family_violence_only) {
       return {
         content: [
@@ -90,30 +94,30 @@ export const austinCrime = {
     }
 
     const where = [];
-    if (council_district !== undefined) {
-      where.push(`council_district = '${council_district}'`);
-    }
-    if (crime_type) {
-      const safe = crime_type.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(crime_type) like '%${safe}%'`);
-    }
-    if (category) {
-      const safe = category.replace(/'/g, "''");
-      where.push(`upper(category_description) like '%${safe.toUpperCase()}%'`);
-    }
+    if (council_district !== undefined) where.push(sodaTextEq("council_district", council_district));
+    if (crime_type) where.push(sodaTextLike("crime_type", crime_type));
+    if (category) where.push(sodaTextLike("category_description", category));
     if (family_violence_only) where.push(`family_violence = 'Y'`);
 
     const effectiveSince = since_date ?? defaultSince90();
     where.push(`rep_date >= '${effectiveSince}T00:00:00.000'`);
 
+    const pageSize = limit ?? 25;
+    const offset = decodeCursor(cursor)?.offset ?? 0;
+
     const rows = await sodaQuery(DATASET, {
       base: BASE,
       where: where.join(" AND "),
       order: "rep_date DESC",
-      limit: limit ?? 25,
+      limit: pageSize + 1,
+      offset,
     });
 
-    if (rows.length === 0) {
+    const hasMore = rows.length > pageSize;
+    const page = hasMore ? rows.slice(0, pageSize) : rows;
+    const nextCursor = hasMore ? encodeCursor(offset + pageSize) : null;
+
+    if (page.length === 0) {
       return {
         content: [
           {
@@ -122,10 +126,11 @@ export const austinCrime = {
               `No Austin crime reports matched filters since ${effectiveSince}. ${ATTRIBUTION_TAG}`,
           },
         ],
+        structuredContent: { query: { council_district, crime_type, category, family_violence_only, since: effectiveSince }, count: 0, results: [], nextCursor: null },
       };
     }
 
-    const normalized = rows.map(normalize);
+    const normalized = page.map(normalize);
 
     return {
       content: [
@@ -138,6 +143,7 @@ export const austinCrime = {
             family_violence_only,
             since: effectiveSince,
             results: normalized,
+            nextCursor,
           }),
         },
         {
@@ -147,6 +153,8 @@ export const austinCrime = {
               query: { council_district, crime_type, category, family_violence_only, since: effectiveSince },
               count: normalized.length,
               results: normalized,
+              nextCursor,
+              offset,
             },
             null,
             2
@@ -192,7 +200,7 @@ function dateOnly(s) {
   return String(s).slice(0, 10);
 }
 
-function formatResults({ council_district, crime_type, category, family_violence_only, since, results }) {
+function formatResults({ council_district, crime_type, category, family_violence_only, since, results, nextCursor }) {
   const queryParts = [];
   if (council_district) queryParts.push(`District ${council_district}`);
   if (crime_type) queryParts.push(`type=${crime_type}`);
@@ -239,6 +247,10 @@ function formatResults({ council_district, crime_type, category, family_violence
     lines.push("");
   }
 
+  if (nextCursor) {
+    lines.push(`*More incidents available. Re-call with \`cursor: "${nextCursor}"\` for the next page.*`);
+    lines.push("");
+  }
   lines.push(`---`);
   lines.push(
     `Source: City of Austin Police Department Crime Reports (${SOURCE_URL}). ` +

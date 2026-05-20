@@ -6,6 +6,7 @@ import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
 import { searchAccounts, getAccountDetail, getEntityDetail } from "../../lib/travis-tax.js";
 import { geocodeAddress, floodZoneAtPoint } from "../../lib/fema-flood.js";
 import { detectCounty, looksLikeCityOfAustin } from "../../lib/county-router.js";
+import { vowPublicGet } from "../../lib/vow-public.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -219,11 +220,13 @@ async function fetchFlood(address) {
 
 async function fetchActiveListing(address) {
   // Free public tier: active + under-contract MLS only. No sold comps.
-  const url = `https://vow-api.re-workflow.com/public/listings/by-address?address=${encodeURIComponent(address)}`;
+  // Uses the shared lib/vow-public.js client so retry / error classification
+  // matches the standalone austin_active_listings tool.
   try {
-    const res = await fetch(url, { headers: { Accept: "application/json", "User-Agent": "local-austin-mcp/1.0" } });
-    if (!res.ok) return { found: false, reason: `vow public api ${res.status}` };
-    const body = await res.json();
+    const body = await vowPublicGet("/listings/by-address", { address });
+    if (body?.success === false) {
+      return { found: false, reason: body?.message || body?.error || "vow public api error" };
+    }
     const data = Array.isArray(body?.data) ? body.data : [];
     if (data.length === 0) return { found: false, reason: "no active listing matches this address" };
     return { found: true, count: data.length, rows: data };

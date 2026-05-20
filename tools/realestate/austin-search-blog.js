@@ -20,7 +20,7 @@ export const austinSearchBlog = {
   ),
   inputSchema: {
     q: z.string().min(2).max(200).describe('Free-text search across post title + content.'),
-    limit: z.number().int().min(1).max(10).optional().describe('Max results (default 5).'),
+    limit: z.number().int().min(1).max(10).default(5).describe('Max results (default 5).'),
   },
   async handler({ q, limit }) {
     const url = new URL(`${WP_BASE}/posts`);

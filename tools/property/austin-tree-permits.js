@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery, sodaAddressLike } from "../../lib/soda.js";
+import { sodaQuery, sodaAddressLike, sodaTextLike } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -29,19 +29,13 @@ export const austinTreePermits = {
     permit_status: z.string().min(2).optional().describe('Status filter (e.g. "Final", "Active", "Withdrawn").'),
     heritage_only: z.boolean().optional().describe('Only heritage-tree permits.'),
     since_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    limit: z.number().int().min(1).max(100).optional(),
+    limit: z.number().int().min(1).max(100).default(25),
   },
   async handler({ address, permit_class, permit_status, heritage_only, since_date, limit } = {}) {
     const where = [];
     if (address) where.push(sodaAddressLike("permit_address", address));
-    if (permit_class) {
-      const safe = permit_class.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(permit_class) like '%${safe}%'`);
-    }
-    if (permit_status) {
-      const safe = permit_status.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(permit_status) like '%${safe}%'`);
-    }
+    if (permit_class) where.push(sodaTextLike("permit_class", permit_class));
+    if (permit_status) where.push(sodaTextLike("permit_status", permit_status));
     if (heritage_only) where.push(`upper(heritage_tree) = 'YES'`);
     if (since_date) where.push(`issued_date >= '${since_date}T00:00:00.000'`);
 

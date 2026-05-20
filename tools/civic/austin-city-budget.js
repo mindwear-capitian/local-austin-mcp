@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sodaQuery } from "../../lib/soda.js";
+import { sodaQuery, sodaTextLike, sodaTextEq } from "../../lib/soda.js";
 import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
 
 /**
@@ -68,25 +68,17 @@ export const austinCityBudget = {
       .int()
       .min(1)
       .max(500)
-      .optional()
+      .default(50)
       .describe("Max results (default 50)."),
   },
   async handler({ department, fund, fiscal_year, search, category, limit }) {
     const where = [];
-    if (department) {
-      const safe = department.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(dept_nm) like '%${safe}%'`);
-    }
-    if (fund) {
-      const safe = fund.toUpperCase().replace(/'/g, "''");
-      where.push(`upper(fund_nm) like '%${safe}%'`);
-    }
+    if (department) where.push(sodaTextLike("dept_nm", department));
+    if (fund) where.push(sodaTextLike("fund_nm", fund));
     if (fiscal_year !== undefined && fiscal_year !== null) {
-      where.push(`fy = '${String(fiscal_year).replace(/'/g, "''")}'`);
+      where.push(sodaTextEq("fy", fiscal_year));
     }
-    if (category) {
-      where.push(`obj_cat = '${category.replace(/'/g, "''")}'`);
-    }
+    if (category) where.push(sodaTextEq("obj_cat", category));
 
     const queryParams = {
       base: BASE,
