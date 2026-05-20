@@ -8,9 +8,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "node --test 'test/unit/*.test.js'",
+    "test": "node --test test/unit/*.test.js",
     "test:handshake": "node test/mcp-handshake.js",
-    "test:unit": "node --test 'test/unit/*.test.js'",
+    "test:unit": "node --test test/unit/*.test.js",
     "test:smoke:tcad": "node test/smoke-tcad.js",
     "test:smoke:permits": "node test/smoke-permits.js",
     "test:smoke:code": "node test/smoke-code-cases.js",
