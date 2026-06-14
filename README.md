@@ -25,7 +25,7 @@ Add to your Claude Desktop config:
   "mcpServers": {
     "local-austin": {
       "command": "npx",
-      "args": ["-y", "local-austin-mcp"]
+      "args": ["-y", "github:mindwear-capitian/local-austin-mcp"]
     }
   }
 }
@@ -36,7 +36,7 @@ Restart Claude Desktop. That's the whole setup. No API keys required for any too
 ### Claude Code
 
 ```bash
-claude mcp add local-austin npx -y local-austin-mcp
+claude mcp add local-austin npx -y github:mindwear-capitian/local-austin-mcp
 ```
 
 ### Configuration
