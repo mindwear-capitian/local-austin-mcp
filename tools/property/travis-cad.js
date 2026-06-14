@@ -47,6 +47,7 @@ export const travisCadSearch = {
               `verify the address is in Travis County. ${ATTRIBUTION_TAG}`,
           },
         ],
+        structuredContent: { query: address, year: year ?? 2025, count: 0, results: [] },
       };
     }
 
@@ -58,7 +59,11 @@ export const travisCadSearch = {
         },
         {
           type: "text",
-          text: JSON.stringify({ query: address, year: year ?? 2025, results }, null, 2),
+          text: JSON.stringify(
+            { query: address, year: year ?? 2025, count: results.length, results },
+            null,
+            2
+          ),
         },
       ],
     };

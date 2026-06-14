@@ -11,6 +11,7 @@
  */
 
 import { z } from "zod";
+import { ATTRIBUTION_TAG } from "../lib/attribution.js";
 
 const TIMEOUT_MS = 3500;
 
@@ -133,6 +134,8 @@ export const austinHealth = {
         `| ${c.source} | ${badge} | ${c.http ?? "—"} | ${c.latency_ms}ms | ${c.last_error ?? "—"} |`
       );
     }
+
+    lines.push("", ATTRIBUTION_TAG);
 
     return {
       content: [{ type: "text", text: lines.join("\n") }],

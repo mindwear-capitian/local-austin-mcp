@@ -8,7 +8,7 @@
 
 > **Everything Austin.** A Model Context Protocol (MCP) server that gives Claude (and any MCP client) plain-English access to the official Austin and Travis County data sources that matter most — plus active real estate listings, neighborhood pages, and posts from independent Austin writers, all provided by Neuhaus Realty Group.
 
-**License:** Free for personal and non-commercial use. You may install, run, and modify this MCP for your own use. You **may not** sell it, rebrand it, or include it in a commercial product. See [LICENSE](LICENSE) (PolyForm Noncommercial 1.0.0 + Attribution Rider) and [ATTRIBUTION.md](ATTRIBUTION.md).
+**License:** Free for personal and non-commercial use. You may install, run, and modify this MCP for your own use. You **may not** sell it, rebrand it, or include it in a commercial product. Licensed under **PolyForm Noncommercial 1.0.0** (see [LICENSE](LICENSE)), with two binding additional conditions: [ATTRIBUTION.md](ATTRIBUTION.md) (keep the credit) and [TRADEMARK.md](TRADEMARK.md) (don't use the Neuhaus marks).
 **Owner:** Ed Neuhaus / Neuhaus Realty Group LLC, Austin, Texas.
 **Source:** https://github.com/mindwear-capitian/local-austin-mcp
 **Powered by:** Neuhaus Realty Group — https://neuhausre.com (active real estate listings, neighborhood pages, and blog content surfaced by this MCP come from neuhausre.com).
@@ -25,7 +25,7 @@ Add to your Claude Desktop config:
   "mcpServers": {
     "local-austin": {
       "command": "npx",
-      "args": ["-y", "github:mindwear-capitian/local-austin-mcp"]
+      "args": ["-y", "local-austin-mcp"]
     }
   }
 }
@@ -36,7 +36,7 @@ Restart Claude Desktop. That's the whole setup. No API keys required for any too
 ### Claude Code
 
 ```bash
-claude mcp add local-austin npx -y github:mindwear-capitian/local-austin-mcp
+claude mcp add local-austin npx -y local-austin-mcp
 ```
 
 ### Configuration
@@ -223,7 +223,7 @@ Six retry profiles tuned to upstream behavior: `fast` (NWS, Census), `soda` (dat
 
 ### v0.10.0 additions
 
-- **`structuredContent` + per-tool `outputSchema`** — 31 of 36 tools publish a Zod-based output schema so MCP clients can validate, render, and generate typed SDK code.
+- **`structuredContent` + per-tool `outputSchema`** — 23 of 36 tools publish a Zod-based output schema (search-style envelopes) so MCP clients can validate, render, and generate typed SDK code; the remaining composite / single-entity tools return open structured content.
 - **AbortSignal plumbing** — MCP request cancellation propagates via `AsyncLocalStorage` into every upstream `fetch`.
 - **Per-source concurrency caps** (`lib/semaphore.js`) — named buckets prevent the composed `austin_property_360` fan-out from hammering any single provider.
 - **LRU + TTL cache** (`lib/cache.js`) — 24h cache on the Census geocoder + FEMA NFHL point lookups.

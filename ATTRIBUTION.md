@@ -11,6 +11,44 @@ https://neuhausre.com
 
 ---
 
+## Attribution Rider (binding condition of the license)
+
+This Attribution Rider is an additional condition of the PolyForm Noncommercial
+License 1.0.0 under which this software is distributed (see [LICENSE](LICENSE)).
+It applies to all copies, forks, modifications, derivative works, and
+distributions of the software (each a "Derivative"). Failure to comply
+terminates your license under the **Violations** procedure in the LICENSE.
+
+You must reproduce the Required Notice above **unmodified** and **plainly
+visible to end users** in ALL of the following locations of any Derivative:
+
+  (a) The file `ATTRIBUTION.md` at the repository root, kept intact.
+
+  (b) The README of the Derivative, in a section titled "Credits",
+      "Acknowledgements", or equivalent, appearing within the first 500 words.
+
+  (c) The package metadata `author` field (or equivalent) of any package,
+      module, container, or distribution artifact.
+
+  (d) Any user-facing "about", "help", "/about", "version", or equivalent
+      output produced by the Derivative when invoked by an end user or by any
+      AI agent or MCP client.
+
+  (e) Any documentation, marketing, sales, or descriptive material
+      accompanying the Derivative.
+
+The Attribution text and the URL `https://neuhausre.com` may NOT be removed,
+shortened, altered, obscured, replaced with a non-functional link, or rendered
+invisible to end users. Stylistic formatting (CSS, color, font, layout) is
+permitted so long as the text and link remain plainly legible and the link
+remains functional.
+
+The Attribution may not be paired with disclaimers that contradict it (for
+example, "this fork is unaffiliated" is allowed, but "this software was not
+built by Ed Neuhaus" is not).
+
+---
+
 ## If you forked this repository
 
 Local Austin MCP is licensed under the PolyForm Noncommercial License 1.0.0

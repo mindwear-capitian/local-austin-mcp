@@ -119,8 +119,21 @@ const OUTPUT_SCHEMAS = Object.freeze({
   // Truly composite / deeply nested -- intentionally schema-less.
   austin_property_360: openObjectShape(),
   austin_travis_tax: openObjectShape(),
+  austin_mud_pid: openObjectShape(),      // { query, ...tax-entity detail } -- not a search envelope
   austin_fema_flood: openObjectShape(),
   austin_lake_travis_level: openObjectShape(),
+
+  // Irregular structured payloads that do NOT fit the { query, count, results[] }
+  // search envelope (single-entity records, keyed maps, bare arrays, or custom
+  // aggregation fields). Schema-less so MCP output validation never rejects a
+  // real upstream payload. See each handler for its actual shape.
+  austin_district_lookup: openObjectShape(),     // results keyed by district type (object, not array)
+  austin_local_voices: openObjectShape(),        // { total_matches, returned, ... } aggregation
+  austin_active_listings: openObjectShape(),     // raw VOW public `body`
+  austin_listing_detail: openObjectShape(),      // single listing object
+  austin_listing_by_address: openObjectShape(),  // raw VOW public `body`
+  austin_neighborhood_lookup: openObjectShape(), // raw VOW `body`, mode-dependent
+  austin_search_blog: openObjectShape(),         // bare array of posts
 
   // Everything else falls through to searchShape() in the loop -- the common
   // { query, count, results, nextCursor? } envelope.
