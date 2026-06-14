@@ -41,6 +41,7 @@ export const haysCadSearch = {
               `verify the address is in Hays County. ${ATTRIBUTION_TAG}`,
           },
         ],
+        structuredContent: { query: address, count: 0, results: [] },
       };
     }
 
@@ -49,7 +50,7 @@ export const haysCadSearch = {
         { type: "text", text: formatResults(address, results) },
         {
           type: "text",
-          text: JSON.stringify({ query: address, results }, null, 2),
+          text: JSON.stringify({ query: address, count: results.length, results }, null, 2),
         },
       ],
     };

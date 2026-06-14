@@ -76,21 +76,29 @@ export const lakeTravisLevel = {
     }
     const rows = parseCsv(csv);
 
-    if (rows.length === 0) {
+    // Trailing rows can occasionally be partial -- today's estimate is still
+    // being populated, so water_level / percent_full may be null for a few
+    // hours. Anchor "latest" (and the trend baselines) on rows that actually
+    // carry the core metrics, so the reading is never half-empty.
+    const validRows = rows.filter(
+      (r) => typeof r.water_level === "number" && typeof r.percent_full === "number"
+    );
+
+    if (validRows.length === 0) {
       return {
         content: [
           {
             type: "text",
-            text: `No reservoir data returned for ${meta.name}. ${ATTRIBUTION_TAG}`,
+            text: `No usable reservoir reading for ${meta.name} (upstream feed empty or incomplete). ${ATTRIBUTION_TAG}`,
           },
         ],
         isError: true,
       };
     }
 
-    const latest = rows[rows.length - 1];
-    const sevenAgo = rows[Math.max(0, rows.length - 8)] ?? null;
-    const thirtyAgo = rows[0];
+    const latest = validRows[validRows.length - 1];
+    const sevenAgo = validRows[Math.max(0, validRows.length - 8)] ?? null;
+    const thirtyAgo = validRows[0];
 
     const trendVs7 = sevenAgo
       ? {
@@ -126,7 +134,10 @@ export const lakeTravisLevel = {
 async function fetchCsvWithRetry(url) {
   const res = await retryFetch(
     (signal) => fetch(url, { headers: { Accept: "text/csv" }, signal }),
-    { source: "Texas Water Development Board (Water Data for Texas)", profile: "arcgis", url }
+    // Plain CDN CSV -- use the lean "fast" profile (12s timeout, 1 retry) rather
+    // than "arcgis" (25s x 3 ~ 75s) so a slow upstream degrades quickly instead
+    // of hanging the caller.
+    { source: "Texas Water Development Board (Water Data for Texas)", profile: "fast", url }
   );
   if (!res.ok) {
     throw new Error(`waterdatafortexas.org rejected: ${res.status} ${res.statusText}`);

@@ -1,5 +1,9 @@
 # Trademarks
 
+This Trademark Notice is an additional condition of the PolyForm Noncommercial
+License 1.0.0 under which this software is distributed (see [LICENSE](LICENSE)).
+Failure to comply is handled under the **Violations** procedure in the LICENSE.
+
 The following are trademarks of **Ed Neuhaus** and **Neuhaus Realty Group LLC**:
 
 - "Local Austin MCP"

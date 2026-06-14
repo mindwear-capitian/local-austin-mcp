@@ -1,15 +1,34 @@
 {
   "name": "local-austin-mcp",
   "version": "0.10.0",
-  "private": true,
   "description": "MCP server giving Claude plain-English access to every official Austin and Travis County dataset.",
   "main": "index.js",
   "type": "module",
+  "bin": {
+    "local-austin-mcp": "index.js"
+  },
+  "files": [
+    "index.js",
+    "lib/",
+    "tools/",
+    "config/",
+    "resources/",
+    "README.md",
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "TRADEMARK.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
+    "prepublishOnly": "npm run test:unit",
     "test": "node --test test/unit/*.test.js",
     "test:handshake": "node test/mcp-handshake.js",
+    "test:contract": "node test/mcp-all-tools.js",
     "test:unit": "node --test test/unit/*.test.js",
     "test:smoke:tcad": "node test/smoke-tcad.js",
     "test:smoke:permits": "node test/smoke-permits.js",
@@ -28,18 +47,41 @@
   },
   "keywords": [
     "mcp",
-    "austin",
-    "travis-county",
+    "mcp-server",
+    "model-context-protocol",
     "claude",
+    "claude-desktop",
+    "anthropic",
+    "llm-tools",
+    "ai-tools",
+    "austin",
+    "austin-texas",
+    "travis-county",
+    "williamson-county",
+    "hays-county",
+    "texas",
     "civic-data",
-    "real-estate"
+    "open-data",
+    "socrata",
+    "gis",
+    "real-estate",
+    "mls",
+    "property-data",
+    "tcad",
+    "permits",
+    "zoning",
+    "flood-zone",
+    "schools"
   ],
   "author": "Ed Neuhaus / Neuhaus Realty Group LLC",
-  "license": "SEE LICENSE IN LICENSE",
-  "homepage": "https://neuhausre.com",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "homepage": "https://github.com/mindwear-capitian/local-austin-mcp#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mindwear-capitian/local-austin-mcp"
+    "url": "git+https://github.com/mindwear-capitian/local-austin-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mindwear-capitian/local-austin-mcp/issues"
   },
   "engines": {
     "node": ">=20"

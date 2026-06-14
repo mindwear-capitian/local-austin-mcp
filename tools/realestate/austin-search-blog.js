@@ -69,7 +69,10 @@ export const austinSearchBlog = {
     return {
       content: [
         { type: "text", text: lines.join("\n") },
-        { type: "text", text: JSON.stringify(posts, null, 2) },
+        // structuredContent must be a JSON object (record), never a bare array,
+        // or the MCP SDK rejects the result frame with -32602. Wrap in the
+        // standard { query, count, results } envelope.
+        { type: "text", text: JSON.stringify({ query: q, count: posts.length, results: posts }, null, 2) },
       ],
     };
   },
