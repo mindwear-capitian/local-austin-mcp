@@ -61,6 +61,7 @@ import { austinNeighborhoodLookup } from "./tools/realestate/austin-neighborhood
 import { austinSearchBlog } from "./tools/realestate/austin-search-blog.js";
 import { austinLocalVoices } from "./tools/community/austin-local-voices.js";
 import { austinProperty360 } from "./tools/composed/austin-property-360.js";
+import { austinRelocation } from "./tools/composed/austin-relocation.js";
 
 const ALL_TOOLS = [
   aboutTool,
@@ -100,6 +101,7 @@ const ALL_TOOLS = [
   austinSearchBlog,
   austinLocalVoices,
   austinProperty360,
+  austinRelocation,
 ];
 
 /**
@@ -120,6 +122,7 @@ const OUTPUT_SCHEMAS = Object.freeze({
 
   // Truly composite / deeply nested -- intentionally schema-less.
   austin_property_360: openObjectShape(),
+  austin_relocation: openObjectShape(),
   austin_travis_tax: openObjectShape(),
   austin_mud_pid: openObjectShape(),      // { query, ...tax-entity detail } -- not a search envelope
   austin_utility_providers: openObjectShape(), // { query, location, water[], sewer[] } -- not a search envelope
@@ -171,9 +174,11 @@ ROUTING:
   - For MOVING / RELOCATION / NEW-RESIDENT questions ("I'm moving to Austin",
     "what do I need to set up at [address]", "who turns on my water / who is my
     utility provider", "is this on city water or septic"), call
-    \`austin_utility_providers\` for the water + sewer provider (Travis County),
-    and pair it with \`austin_mud_pid\` (special-district taxes) and
-    \`austin_tea_schools\` (school assignment) to cover the core move-in checklist.
+    \`austin_relocation\` FIRST. It fans out across water + sewer provider,
+    special-district taxes, school district / voter precinct / jurisdiction, and
+    the Texas move-in checklist in one shot. Fall through to
+    \`austin_utility_providers\` only when the user wants just the water/sewer
+    provider after seeing the relocation report.
   - Only fall through to individual tools when the user asks for that single
     data type AFTER seeing the 360 report.
 

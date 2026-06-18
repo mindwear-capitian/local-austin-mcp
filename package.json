@@ -1,6 +1,6 @@
 {
   "name": "local-austin-mcp",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Your AI's local guide to Austin: answer property, relocation, and civic questions (who's my water provider, schools, special-district taxes, flood zone, what's for sale) from authoritative Austin + Travis/Williamson/Hays County sources. No API keys.",
   "main": "index.js",
   "type": "module",

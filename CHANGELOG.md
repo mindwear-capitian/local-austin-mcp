@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] — 2026-06-18
+
+### Added
+
+- **`austin_relocation`** — composed new-resident report. One address fans out
+  to water + sewer provider (Travis CCN), special-purpose taxing districts
+  (MUD/PID/WCID/ESD via the Tax Office breakdown), school district / voter
+  precinct / City-of-Austin jurisdiction (ArcGIS point-in-polygon), and the
+  standard Texas move-in checklist (driver license 90-day rule, vehicle
+  registration, voter registration, homestead exemption, gas). The
+  "I'm moving here, what do I set up?" entry point — distinct from
+  `austin_property_360`, which is the property-ownership / due-diligence lens.
+  Live lookups are Travis County; the checklist shows for any address.
+  Failures are isolated per section. Credential-free.
+- Server instructions now route MOVING/RELOCATION questions to
+  `austin_relocation` first.
+
 ## [0.11.0] — 2026-06-18
 
 ### Added
