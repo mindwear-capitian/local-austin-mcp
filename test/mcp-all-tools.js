@@ -71,6 +71,7 @@ const ARGS = {
   austin_search_blog: { q: "austin", limit: 3 },
   austin_local_voices: { limit: 3 },
   austin_property_360: { address: "9501 San Lucas Dr Austin TX" },
+  austin_relocation: { address: "1513 Lakeway Blvd Austin TX 78734" },
 };
 
 const PER_CALL_TIMEOUT = 60000;
@@ -90,7 +91,7 @@ const EXPECT_SUCCESS = new Set([
   "austin_restaurant_inspections", "austin_tree_permits", "austin_roadway_work_zones",
   "austin_animal_center", "austin_txdot_projects", "austin_nws_alerts",
   "austin_neighborhood_lookup", "austin_search_blog", "austin_local_voices",
-  "austin_property_360", "austin_utility_providers",
+  "austin_property_360", "austin_utility_providers", "austin_relocation",
 ]);
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
