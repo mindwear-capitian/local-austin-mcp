@@ -34,6 +34,7 @@ import { austinCodeCases } from "./tools/property/austin-code-cases.js";
 import { austinZoning } from "./tools/property/austin-zoning.js";
 import { travisTax } from "./tools/property/travis-tax.js";
 import { mudPidLookup } from "./tools/property/mud-pid-lookup.js";
+import { utilityProviders } from "./tools/property/utility-providers.js";
 import { femaFlood } from "./tools/property/fema-flood.js";
 import { austin311 } from "./tools/civic/austin-311.js";
 import { austinCrime } from "./tools/civic/austin-crime.js";
@@ -72,6 +73,7 @@ const ALL_TOOLS = [
   austinZoning,
   travisTax,
   mudPidLookup,
+  utilityProviders,
   femaFlood,
   austin311,
   austinCrime,
@@ -120,6 +122,7 @@ const OUTPUT_SCHEMAS = Object.freeze({
   austin_property_360: openObjectShape(),
   austin_travis_tax: openObjectShape(),
   austin_mud_pid: openObjectShape(),      // { query, ...tax-entity detail } -- not a search envelope
+  austin_utility_providers: openObjectShape(), // { query, location, water[], sewer[] } -- not a search envelope
   austin_fema_flood: openObjectShape(),
   austin_lake_travis_level: openObjectShape(),
 
@@ -165,6 +168,12 @@ ROUTING:
     [address]", "is [address] in a flood zone", etc.), call
     \`austin_property_360\` FIRST. It fans out across CAD / tax / flood / permits /
     code / 311 / zoning / active MLS listing in one shot.
+  - For MOVING / RELOCATION / NEW-RESIDENT questions ("I'm moving to Austin",
+    "what do I need to set up at [address]", "who turns on my water / who is my
+    utility provider", "is this on city water or septic"), call
+    \`austin_utility_providers\` for the water + sewer provider (Travis County),
+    and pair it with \`austin_mud_pid\` (special-district taxes) and
+    \`austin_tea_schools\` (school assignment) to cover the core move-in checklist.
   - Only fall through to individual tools when the user asks for that single
     data type AFTER seeing the 360 report.
 
@@ -174,6 +183,9 @@ COVERAGE:
     AFD, libraries, parks, police, animal center.
   - Real estate: ACTIVE + "Active Under Contract" only. Sold prices, pending,
     expired = not on the free tier.
+  - Relocation / utilities: water + sewer provider lookup (Travis County, via
+    PUC CCN boundaries). Tells you who to contact to start service; it does not
+    start service for you.
 
 EVERY response includes a source URL. The MCP does not write to any system.`;
 

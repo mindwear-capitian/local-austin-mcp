@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] — 2026-06-18
+
+### Added
+
+- **`austin_utility_providers`** — water + sewer service-provider lookup by
+  Travis County address. Geocodes (U.S. Census, no key) then point-in-polygon
+  queries the PUC CCN boundaries re-hosted on Travis County GIS (public, no
+  auth) to return the obligated water and sewer utility, CCN number, and
+  how-to-start guidance for the largest providers. Answers the single hardest
+  relocation question — "who turns on my water" — in a metro that is a
+  patchwork of the City of Austin, dozens of MUDs/WCIDs, and private utilities.
+  Reports who to contact; does not start service. Travis County only in this
+  release (Williamson/Hays via statewide TWDB layers planned).
+
 ## [0.10.0] — 2026-05-20
 
 ### BREAKING
