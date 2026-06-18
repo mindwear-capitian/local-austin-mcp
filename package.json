@@ -1,7 +1,7 @@
 {
   "name": "local-austin-mcp",
   "version": "0.11.0",
-  "description": "MCP server giving Claude plain-English access to every official Austin and Travis County dataset.",
+  "description": "Your AI's local guide to Austin: answer property, relocation, and civic questions (who's my water provider, schools, special-district taxes, flood zone, what's for sale) from authoritative Austin + Travis/Williamson/Hays County sources. No API keys.",
   "main": "index.js",
   "type": "module",
   "bin": {

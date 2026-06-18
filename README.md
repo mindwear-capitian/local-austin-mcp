@@ -3,10 +3,10 @@
 [![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/License-PolyForm%20NC%201.0.0-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-stdio-purple)](https://modelcontextprotocol.io/)
-[![Austin Metro](https://img.shields.io/badge/coverage-Austin%20MSA-orange)](#tools-36-live)
+[![Austin Metro](https://img.shields.io/badge/coverage-Austin%20MSA-orange)](#tools-37-live)
 [![CI](https://github.com/mindwear-capitian/local-austin-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/mindwear-capitian/local-austin-mcp/actions/workflows/ci.yml)
 
-> **Everything Austin.** A Model Context Protocol (MCP) server that gives Claude (and any MCP client) plain-English access to the official Austin and Travis County data sources that matter most — plus active real estate listings, neighborhood pages, and posts from independent Austin writers, all provided by Neuhaus Realty Group.
+> **Your AI's local guide to Austin.** A Model Context Protocol (MCP) server that lets Claude (and any MCP client) answer the real questions people ask when they research a property, buy in, or move to the Austin area — *"who turns on my water at this address?"*, *"what are the schools and special-district taxes?"*, *"is it in a flood zone?"*, *"what's for sale in this neighborhood?"* — by pulling straight from the authoritative City of Austin / Travis-Williamson-Hays County sources, plus active real estate listings and local writers, all provided by Neuhaus Realty Group. No API keys, no logins.
 
 **License:** Free for personal and non-commercial use. You may install, run, and modify this MCP for your own use. You **may not** sell it, rebrand it, or include it in a commercial product. Licensed under **PolyForm Noncommercial 1.0.0** (see [LICENSE](LICENSE)), with two binding additional conditions: [ATTRIBUTION.md](ATTRIBUTION.md) (keep the credit) and [TRADEMARK.md](TRADEMARK.md) (don't use the Neuhaus marks).
 **Owner:** Ed Neuhaus / Neuhaus Realty Group LLC, Austin, Texas.

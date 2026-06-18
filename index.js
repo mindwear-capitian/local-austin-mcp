@@ -168,6 +168,12 @@ ROUTING:
     [address]", "is [address] in a flood zone", etc.), call
     \`austin_property_360\` FIRST. It fans out across CAD / tax / flood / permits /
     code / 311 / zoning / active MLS listing in one shot.
+  - For MOVING / RELOCATION / NEW-RESIDENT questions ("I'm moving to Austin",
+    "what do I need to set up at [address]", "who turns on my water / who is my
+    utility provider", "is this on city water or septic"), call
+    \`austin_utility_providers\` for the water + sewer provider (Travis County),
+    and pair it with \`austin_mud_pid\` (special-district taxes) and
+    \`austin_tea_schools\` (school assignment) to cover the core move-in checklist.
   - Only fall through to individual tools when the user asks for that single
     data type AFTER seeing the 360 report.
 
@@ -177,6 +183,9 @@ COVERAGE:
     AFD, libraries, parks, police, animal center.
   - Real estate: ACTIVE + "Active Under Contract" only. Sold prices, pending,
     expired = not on the free tier.
+  - Relocation / utilities: water + sewer provider lookup (Travis County, via
+    PUC CCN boundaries). Tells you who to contact to start service; it does not
+    start service for you.
 
 EVERY response includes a source URL. The MCP does not write to any system.`;
 
