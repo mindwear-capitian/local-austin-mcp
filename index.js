@@ -34,6 +34,7 @@ import { austinCodeCases } from "./tools/property/austin-code-cases.js";
 import { austinZoning } from "./tools/property/austin-zoning.js";
 import { travisTax } from "./tools/property/travis-tax.js";
 import { mudPidLookup } from "./tools/property/mud-pid-lookup.js";
+import { utilityProviders } from "./tools/property/utility-providers.js";
 import { femaFlood } from "./tools/property/fema-flood.js";
 import { austin311 } from "./tools/civic/austin-311.js";
 import { austinCrime } from "./tools/civic/austin-crime.js";
@@ -72,6 +73,7 @@ const ALL_TOOLS = [
   austinZoning,
   travisTax,
   mudPidLookup,
+  utilityProviders,
   femaFlood,
   austin311,
   austinCrime,
@@ -120,6 +122,7 @@ const OUTPUT_SCHEMAS = Object.freeze({
   austin_property_360: openObjectShape(),
   austin_travis_tax: openObjectShape(),
   austin_mud_pid: openObjectShape(),      // { query, ...tax-entity detail } -- not a search envelope
+  austin_utility_providers: openObjectShape(), // { query, location, water[], sewer[] } -- not a search envelope
   austin_fema_flood: openObjectShape(),
   austin_lake_travis_level: openObjectShape(),
 

@@ -79,7 +79,7 @@ Claude figures out which tool to call, queries the authoritative source live, an
 
 ---
 
-## Tools (36 live)
+## Tools (37 live)
 
 All tools are read-only, idempotent, and hit external providers (`readOnlyHint: true`, `idempotentHint: true`, `openWorldHint: true` in MCP annotations). The composed `austin_property_360` is the preferred entry point for any address-centric question.
 
@@ -102,6 +102,7 @@ All tools are read-only, idempotent, and hit external providers (`readOnlyHint: 
 | `austin_hays_cad` | Hays CAD lookup via ArcGIS. |
 | `austin_travis_tax` | Travis County Tax Office — current bill, exemptions, delinquencies. |
 | `austin_mud_pid` | MUD / PID special-district overlay (Texas Comptroller). |
+| `austin_utility_providers` | Who provides **water + sewer** at a Travis County address (CCN holder), with how-to-start guidance. The "who turns on my water" question for newcomers. Source: PUC CCN boundaries via Travis County GIS. |
 | `austin_fema_flood` | FEMA NFHL flood zone lookup. |
 | `austin_permits` | Full permit history for any City of Austin address. |
 | `austin_code_cases` | Active and historical code-compliance cases. |
