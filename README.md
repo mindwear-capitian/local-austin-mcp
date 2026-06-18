@@ -79,7 +79,7 @@ Claude figures out which tool to call, queries the authoritative source live, an
 
 ---
 
-## Tools (37 live)
+## Tools (38 live)
 
 All tools are read-only, idempotent, and hit external providers (`readOnlyHint: true`, `idempotentHint: true`, `openWorldHint: true` in MCP annotations). The composed `austin_property_360` is the preferred entry point for any address-centric question.
 
@@ -109,6 +109,7 @@ All tools are read-only, idempotent, and hit external providers (`readOnlyHint: 
 | `austin_zoning` | Austin zoning + lot dimensions + plat lookup. |
 | `austin_tree_permits` | City of Austin issued tree permits — removal / heritage / root-zone work. Useful for pre-listing prep and buyer due-diligence. |
 | `austin_property_360` | Composed: one address → CAD + tax + flood + permits + code + 311 + zoning in one shot. |
+| `austin_relocation` | Composed **new-resident report**: one address → water + sewer provider, special-district taxes, school district / voter precinct / jurisdiction, and the Texas move-in checklist (license, registration, voter reg, homestead exemption). The "I'm moving here, what do I set up?" entry point. |
 
 ### Civic + Public Safety
 
