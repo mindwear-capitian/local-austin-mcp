@@ -4,8 +4,8 @@
  *
  * Built by Ed Neuhaus / Neuhaus Realty Group LLC -- https://neuhausre.com
  *
- * License: PolyForm Noncommercial 1.0.0 with Attribution Rider and Trademark
- * Notice. See LICENSE in the repository root. Forks must preserve attribution.
+ * License: Apache License 2.0. See LICENSE in the repository root. Please
+ * preserve the NOTICE attribution when redistributing.
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
