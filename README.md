@@ -1,6 +1,6 @@
 # Local Austin MCP
 
-[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/License-PolyForm%20NC%201.0.0-blue.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-stdio-purple)](https://modelcontextprotocol.io/)
 [![Austin Metro](https://img.shields.io/badge/coverage-Austin%20MSA-orange)](#tools-37-live)
@@ -8,10 +8,12 @@
 
 > **Your AI's local guide to Austin.** A Model Context Protocol (MCP) server that lets Claude (and any MCP client) answer the real questions people ask when they research a property, buy in, or move to the Austin area — *"who turns on my water at this address?"*, *"what are the schools and special-district taxes?"*, *"is it in a flood zone?"*, *"what's for sale in this neighborhood?"* — by pulling straight from the authoritative City of Austin / Travis-Williamson-Hays County sources, plus active real estate listings and local writers, all provided by Neuhaus Realty Group. No API keys, no logins.
 
-**License:** Free for personal and non-commercial use. You may install, run, and modify this MCP for your own use. You **may not** sell it, rebrand it, or include it in a commercial product. Licensed under **PolyForm Noncommercial 1.0.0** (see [LICENSE](LICENSE)), with two binding additional conditions: [ATTRIBUTION.md](ATTRIBUTION.md) (keep the credit) and [TRADEMARK.md](TRADEMARK.md) (don't use the Neuhaus marks).
+**License:** Open source under **[Apache License 2.0](LICENSE)** — free to use, modify, and build on, including commercially. Please keep the [NOTICE](NOTICE) attribution when you redistribute. The Apache license grants no trademark rights: "Neuhaus Realty Group" and the Neuhaus marks stay ours (see [TRADEMARK.md](TRADEMARK.md)).
 **Owner:** Ed Neuhaus / Neuhaus Realty Group LLC, Austin, Texas.
 **Source:** https://github.com/mindwear-capitian/local-austin-mcp
 **Powered by:** Neuhaus Realty Group — https://neuhausre.com (active real estate listings, neighborhood pages, and blog content surfaced by this MCP come from neuhausre.com).
+
+> 🚧 **This is an early project and I'd love help making it better.** I'm a broker who built this to give an AI a real, plain-English handle on Austin. It works, but there's a lot more Austin data worth wiring in and a couple of hard problems I haven't cracked. If you build with MCPs or know Austin/Texas civic data, pull requests and ideas are genuinely welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and the [good first issues](https://github.com/mindwear-capitian/local-austin-mcp/labels/good%20first%20issue).
 
 ---
 
