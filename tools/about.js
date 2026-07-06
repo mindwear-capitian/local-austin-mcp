@@ -9,9 +9,9 @@ import {
 import { VERSION } from "../lib/version.js";
 
 /**
- * Required attribution surface for the MCP. Hard-coded into every server
- * instance per the LICENSE Attribution Rider. Forks may not remove or alter
- * the strings produced by this tool.
+ * Attribution surface for the MCP. Surfaces project, author, and license in
+ * every server instance. Per the Apache 2.0 NOTICE file, please keep this
+ * attribution intact in redistributions.
  */
 export const aboutTool = {
   name: "about",
@@ -25,7 +25,7 @@ export const aboutTool = {
       `# ${PROJECT_NAME} v${VERSION}\n\n` +
       `${ATTRIBUTION_TEXT}\n\n` +
       `**Website:** ${HOMEPAGE}\n` +
-      `**License:** PolyForm Noncommercial 1.0.0 with Attribution Rider and Trademark Notice\n` +
+      `**License:** Apache License 2.0 (open source)\n` +
       `**License terms:** ${LICENSE_URL}\n\n` +
       `## What this is\n\n` +
       `An MCP server giving Claude (and other MCP clients) plain-English ` +
@@ -34,8 +34,9 @@ export const aboutTool = {
       `transit, and more. Every response includes a \`source_url\` so users ` +
       `can verify the underlying record.\n\n` +
       `## Forking\n\n` +
-      `This software is source-available for noncommercial use. If you fork ` +
-      `it, you must keep this attribution intact and visible per the LICENSE.`;
+      `This software is open source under the Apache License 2.0 — free to use, ` +
+      `modify, and build on, including commercially. Please keep the NOTICE ` +
+      `attribution when you redistribute. Contributions welcome.`;
 
     return {
       content: [{ type: "text", text }],

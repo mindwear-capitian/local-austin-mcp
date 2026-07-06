@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] — 2026-07-06
+
+### Changed
+
+- **Relicensed from PolyForm Noncommercial 1.0.0 → Apache License 2.0.** The
+  project is now true open source — free to use, modify, and build on,
+  including commercially. Attribution is requested via the new `NOTICE` file
+  (Apache 2.0 §4). Trademark rights are unchanged: the Neuhaus marks remain
+  reserved (Apache 2.0 §6, see `TRADEMARK.md`).
+- Reframed the README as an early, contribution-welcome project and added
+  `CONTRIBUTING.md`.
+- Removed `ATTRIBUTION.md` (the PolyForm Attribution Rider); its intent now
+  lives in `NOTICE`.
+
 ## [0.12.0] — 2026-06-18
 
 ### Added

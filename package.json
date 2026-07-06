@@ -1,6 +1,6 @@
 {
   "name": "local-austin-mcp",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Your AI's local guide to Austin: answer property, relocation, and civic questions (who's my water provider, schools, special-district taxes, flood zone, what's for sale) from authoritative Austin + Travis/Williamson/Hays County sources. No API keys.",
   "main": "index.js",
   "type": "module",
@@ -74,7 +74,7 @@
     "schools"
   ],
   "author": "Ed Neuhaus / Neuhaus Realty Group LLC",
-  "license": "PolyForm-Noncommercial-1.0.0",
+  "license": "Apache-2.0",
   "homepage": "https://github.com/mindwear-capitian/local-austin-mcp#readme",
   "repository": {
     "type": "git",

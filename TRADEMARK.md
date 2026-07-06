@@ -1,8 +1,8 @@
 # Trademarks
 
-This Trademark Notice is an additional condition of the PolyForm Noncommercial
-License 1.0.0 under which this software is distributed (see [LICENSE](LICENSE)).
-Failure to comply is handled under the **Violations** procedure in the LICENSE.
+This software is licensed under the **Apache License 2.0** (see [LICENSE](LICENSE)).
+Section 6 of that license expressly grants **no trademark rights**. This notice
+states which marks are reserved and how they may be used.
 
 The following are trademarks of **Ed Neuhaus** and **Neuhaus Realty Group LLC**:
 
@@ -13,8 +13,8 @@ The following are trademarks of **Ed Neuhaus** and **Neuhaus Realty Group LLC**:
 - The Neuhaus Realty Group logo and any associated word marks, logos, and
   service marks
 
-The license under which this software is distributed (PolyForm Noncommercial
-1.0.0 with Attribution Rider) does **not** grant any right to use these marks.
+The Apache License 2.0 under which this software is distributed does **not**
+grant any right to use these marks (see Apache License 2.0, section 6).
 
 ## What you may NOT do
 
