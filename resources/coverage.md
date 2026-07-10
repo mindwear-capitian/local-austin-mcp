@@ -21,6 +21,14 @@ The following tools only return data inside the City of Austin proper. Lakeway, 
 
 The composed `austin_property_360` tool detects whether an address is in the city limits before firing these and shows a `skipped` reason when not.
 
+## Municipal code text (`austin_city_code`)
+
+Full-text search + section fetch of codes hosted on Municode: **Austin** (Code
+of Ordinances, Land Development Code, criteria manuals), **Leander**, **Round
+Rock**, **Dripping Springs**. Lakeway, Bee Cave, Cedar Park, Kyle, and
+Pflugerville publish through other vendors (American Legal / Franklin Legal)
+and are NOT covered -- check those cities' websites directly.
+
 ## Tax / entity tools
 
 `austin_travis_tax` and `austin_mud_pid` only cover Travis County. There is no equivalent tool for Williamson or Hays yet -- check directly with those tax offices.

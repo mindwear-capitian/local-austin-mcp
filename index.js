@@ -31,6 +31,7 @@ import { williamsonCadSearch } from "./tools/property/williamson-cad.js";
 import { haysCadSearch } from "./tools/property/hays-cad.js";
 import { austinPermits } from "./tools/property/austin-permits.js";
 import { austinCodeCases } from "./tools/property/austin-code-cases.js";
+import { austinCityCode } from "./tools/civic/austin-city-code.js";
 import { austinZoning } from "./tools/property/austin-zoning.js";
 import { travisTax } from "./tools/property/travis-tax.js";
 import { mudPidLookup } from "./tools/property/mud-pid-lookup.js";
@@ -71,6 +72,7 @@ const ALL_TOOLS = [
   haysCadSearch,
   austinPermits,
   austinCodeCases,
+  austinCityCode,
   austinZoning,
   travisTax,
   mudPidLookup,
@@ -186,6 +188,9 @@ COVERAGE:
   - Property: Travis, Williamson, Hays counties (CAD auto-routed by ZIP/city).
   - City of Austin Open Data: permits, code, 311, zoning, restaurant inspections,
     AFD, libraries, parks, police, animal center.
+  - Municipal code TEXT (\`austin_city_code\`): full-text search + section fetch
+    of Austin's Code of Ordinances, Land Development Code, and criteria manuals
+    (plus Leander, Round Rock, Dripping Springs) via Municode.
   - Real estate: ACTIVE + "Active Under Contract" only. Sold prices, pending,
     expired = not on the free tier.
   - Relocation / utilities: water + sewer provider lookup (Travis County, via
