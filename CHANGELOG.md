@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] — 2026-07-10
+
+### Added
+
+- **`austin_city_code`** — full-text search + full-section fetch of the actual
+  municipal code TEXT via the public Municode JSON API. Covers all of Austin's
+  Municode products (Code of Ordinances, Land Development Code, and the
+  criteria manuals) plus Leander, Round Rock, and Dripping Springs. Search
+  returns section title, breadcrumb path, snippet, a `section_id` handle, and
+  a `library.municode.com` deep link; passing `section_id` back returns the
+  full section text (capped at 15k chars). New `lib/municode.js` adapter with
+  retry + 12h-cached publication-job lookups, and `test/smoke-city-code.js`.
+
 ## [0.13.0] — 2026-07-06
 
 ### Changed
