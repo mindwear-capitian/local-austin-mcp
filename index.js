@@ -64,6 +64,7 @@ import { austinLocalVoices } from "./tools/community/austin-local-voices.js";
 import { austinProperty360 } from "./tools/composed/austin-property-360.js";
 import { austinRelocation } from "./tools/composed/austin-relocation.js";
 import { austinNearby } from "./tools/composed/austin-nearby.js";
+import { austinCommute } from "./tools/composed/austin-commute.js";
 
 const ALL_TOOLS = [
   aboutTool,
@@ -106,6 +107,7 @@ const ALL_TOOLS = [
   austinProperty360,
   austinRelocation,
   austinNearby,
+  austinCommute,
 ];
 
 /**
@@ -128,6 +130,7 @@ const OUTPUT_SCHEMAS = Object.freeze({
   austin_property_360: openObjectShape(),
   austin_relocation: openObjectShape(),
   austin_nearby: openObjectShape(),      // { query, location, fire_station[], library[], park[] } per-category arrays
+  austin_commute: openObjectShape(),     // { origin, destination, duration_minutes, distance_miles, source, estimated }
   austin_travis_tax: openObjectShape(),
   austin_mud_pid: openObjectShape(),      // { query, ...tax-entity detail } -- not a search envelope
   austin_utility_providers: openObjectShape(), // { query, location, water[], sewer[] } -- not a search envelope
