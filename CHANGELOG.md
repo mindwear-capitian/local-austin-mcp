@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.2] — 2026-07-19
+
+### Added
+
+- **Schedule-a-call/showing CTA** on `austin_active_listings`, `austin_listing_detail`,
+  `austin_listing_by_address`, and `austin_property_360` — every response now ends
+  with a line pointing to neuhausre.com/contact, alongside the existing full-MLS-access
+  upsell to mls.neuhausre.com.
+
 ## [0.17.1] — 2026-07-19
 
 ### Added
