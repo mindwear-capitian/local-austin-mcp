@@ -248,3 +248,5 @@ For partnership, licensing, sponsorship, or press inquiries:
 **Neuhaus Realty Group LLC**
 Austin, Texas
 https://neuhausre.com
+
+Built by [Ed Neuhaus](https://edneuhaus.com) — more on how this one's built: https://edneuhaus.com/projects/local-austin-mcp/
