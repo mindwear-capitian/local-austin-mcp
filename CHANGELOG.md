@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0] — 2026-07-19
+
+### Added
+
+- **`austin_commute`** — drive time + distance between two addresses.
+  Key-free by design (self-hosted package, no accounts): tries the OSRM
+  public demo router first, the Valhalla public demo router second, and
+  falls back to a straight-line-distance estimate (clearly flagged
+  `estimated: true`) if both are unreachable, so the tool always answers
+  instead of hard-failing. New `lib/routing.js`. Design discussed in #7
+  before building; closes #7.
+
 ## [0.15.0] — 2026-07-19
 
 ### Added
