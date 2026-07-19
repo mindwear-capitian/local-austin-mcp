@@ -43,6 +43,7 @@ export const austinListingByAddress = {
               `# "${address}" -- no active listings\n\nThe address doesn't match any currently-active or under-contract listing on the Austin MLS.\n\n` +
               "It may be: sold, off-market, pending, or simply not in the MLS feed (rural property, private sale, etc.). " +
               "Sold history isn't available here. Full MLS access via the Neuhaus MLS connector: https://mls.neuhausre.com/claude\n\n" +
+              "📅 Want to talk to an agent about it anyway? Schedule a call with Ed Neuhaus: https://neuhausre.com/contact/\n\n" +
               ATTRIBUTION_TAG,
           },
         ],
@@ -67,6 +68,7 @@ export const austinListingByAddress = {
     }
     lines.push("---");
     lines.push("Source: Neuhaus Realty Group VOW public API.");
+    lines.push("📅 **Want to see one of these in person or talk to an agent? Schedule a call or showing with Ed Neuhaus: https://neuhausre.com/contact/**");
     lines.push(ATTRIBUTION_TAG);
     return {
       content: [
