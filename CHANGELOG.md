@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0] — 2026-07-19
+
+### Changed
+
+- **`austin_active_listings`** free-tier result cap lowered 25 → 10 (server-side,
+  vow-api.re-workflow.com/public). When more than 10 listings match, the
+  response now flags `more_available` + `upgrade_url` and the tool surfaces an
+  upsell to the full Neuhaus MLS MCP (mls.neuhausre.com) instead of silently
+  truncating.
+- Sold/pending/expired data messaging across `austin_active_listings`,
+  `austin_listing_detail`, `austin_listing_by_address`, and `austin_property_360`
+  now points to the Neuhaus MLS connector signup (mls.neuhausre.com/claude)
+  instead of a phone-call CTA.
+
 ## [0.16.0] — 2026-07-19
 
 ### Added

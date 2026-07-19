@@ -21,7 +21,7 @@ export const austinListingDetail = {
         body?.error === "not_found"
           ? `MLS ${mls_id} is not currently active on the free public tier. ` +
             "It may be sold, pending, expired, or display-restricted (VOW-only). " +
-            "Contact Ed Neuhaus at (512) 827-8830 for full MLS access with a signed buyer-rep."
+            "Full MLS access via the Neuhaus MLS connector: https://mls.neuhausre.com/claude"
           : body?.message || "Listing lookup failed.";
       return {
         content: [{ type: "text", text: `# Listing ${mls_id}\n\n${message}\n\n${ATTRIBUTION_TAG}` }],
@@ -90,7 +90,7 @@ function formatListing(r) {
   lines.push("");
   lines.push("---");
   lines.push("Source: Neuhaus Realty Group VOW public API.");
-  lines.push("*Free tier — sold prices, pending deals, and expired listings require a signed buyer-rep agreement.*");
+  lines.push("*Free tier — sold prices, pending deals, and expired listings aren't available here. Get full access via the Neuhaus MLS connector: https://mls.neuhausre.com/claude*");
   lines.push(ATTRIBUTION_TAG);
   return lines.join("\n");
 }

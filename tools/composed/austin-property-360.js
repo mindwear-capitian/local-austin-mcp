@@ -506,7 +506,7 @@ function sectionListing(sec) {
   const v = sec.value;
   if (v.skipped) return [`*${v.reason}*`];
   if (!v.found) return [`*Not currently listed for sale on the Austin MLS (active or under contract).*
-*Sold prices and pending deals are not exposed on the free tier — contact Ed Neuhaus for full MLS access.*`];
+*Sold prices and pending deals aren't exposed on the free tier. Full MLS access via the Neuhaus MLS connector: https://mls.neuhausre.com/claude*`];
   const lines = [];
   for (const r of (v.rows || []).slice(0, 3)) {
     const status = r.standard_status === "Active Under Contract" ? " *(under contract)*" : "";

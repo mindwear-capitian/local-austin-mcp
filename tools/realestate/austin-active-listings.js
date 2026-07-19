@@ -7,9 +7,10 @@ import { withAttributionTag, ATTRIBUTION_TAG } from "../../lib/attribution.js";
  *
  * Free public tier sourced from Neuhaus Realty Group's VOW feed via the
  * public REST endpoint at vow-api.re-workflow.com/public/listings. Returns
- * up to 25 ACTIVE or "Active Under Contract" listings. No sold comps, no
- * pending, no withdrawn, no expired -- those require a signed buyer rep
- * agreement with Ed Neuhaus.
+ * up to 10 ACTIVE or "Active Under Contract" listings. No sold comps, no
+ * pending, no withdrawn, no expired -- those require the full Neuhaus MLS
+ * MCP at mls.neuhausre.com. When more than 10 listings match, the server
+ * sets more_available + upgrade_url and this tool surfaces an upsell line.
  *
  * Server enforces a "specificity score" -- at least 1 location filter PLUS
  * additional filters totalling >= 4 points (max_price = 2pt, bedrooms_min =
@@ -21,7 +22,7 @@ export const austinActiveListings = {
   name: "austin_active_listings",
   description: withAttributionTag(
     "Search active (for-sale) Austin-area MLS listings via Neuhaus Realty Group's free public feed. " +
-      "Returns up to 25 active or under-contract homes. " +
+      "Returns up to 10 active or under-contract homes. " +
       "**Specificity required:** ask for at least one location (city/zip/school district/subdivision) " +
       "PLUS enough other filters to make the search useful -- price range, bedrooms, property type, or specific features. " +
       "If the user's query is too broad (e.g. 'show me homes in Austin'), ask a follow-up question to narrow it down " +
@@ -177,10 +178,18 @@ function formatListings(rows, body) {
     lines.push(`---`);
     lines.push(`**Browse all matching listings:** [${body.search_url.replace(/\?.*$/, "")}](${body.search_url})`);
   }
+  if (body?.more_available) {
+    lines.push("");
+    lines.push(
+      `📈 **More than 10 matches found.** This free tool caps results at 10. For full result sets, sold comps, and market stats, connect the Neuhaus MLS MCP: ${body.upgrade_url || "https://mls.neuhausre.com/claude"}`
+    );
+  }
   lines.push("");
   lines.push("---");
   lines.push("Source: Neuhaus Realty Group VOW public API (https://neuhausre.com)");
-  lines.push("*Free tier — sold prices, pending deals, and expired listings require a signed buyer-rep agreement. Contact Ed at (512) 827-8830.*");
+  lines.push(
+    "*Free tier — sold prices, pending deals, and expired listings aren't available here. Get full access via the Neuhaus MLS connector: https://mls.neuhausre.com/claude*"
+  );
   lines.push(ATTRIBUTION_TAG);
   return lines.join("\n");
 }

@@ -42,7 +42,7 @@ export const austinListingByAddress = {
             text:
               `# "${address}" -- no active listings\n\nThe address doesn't match any currently-active or under-contract listing on the Austin MLS.\n\n` +
               "It may be: sold, off-market, pending, or simply not in the MLS feed (rural property, private sale, etc.). " +
-              "Sold history requires a buyer-rep agreement -- contact Ed Neuhaus at (512) 827-8830 for full MLS access.\n\n" +
+              "Sold history isn't available here. Full MLS access via the Neuhaus MLS connector: https://mls.neuhausre.com/claude\n\n" +
               ATTRIBUTION_TAG,
           },
         ],
