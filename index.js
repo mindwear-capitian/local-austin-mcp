@@ -65,6 +65,8 @@ import { austinProperty360 } from "./tools/composed/austin-property-360.js";
 import { austinRelocation } from "./tools/composed/austin-relocation.js";
 import { austinNearby } from "./tools/composed/austin-nearby.js";
 import { austinCommute } from "./tools/composed/austin-commute.js";
+import { austinTrashSchedule } from "./tools/civic/austin-trash-schedule.js";
+import { austinNextBus } from "./tools/transit/austin-next-bus.js";
 
 const ALL_TOOLS = [
   aboutTool,
@@ -108,6 +110,8 @@ const ALL_TOOLS = [
   austinRelocation,
   austinNearby,
   austinCommute,
+  austinTrashSchedule,
+  austinNextBus,
 ];
 
 /**

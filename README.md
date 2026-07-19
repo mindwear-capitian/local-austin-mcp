@@ -78,12 +78,14 @@ Once installed, ask Claude things like:
 - *"Any tree-removal permits ever issued at this address?"*
 - *"What TxDOT projects are scheduled on I-35 in Travis County?"*
 - *"Has Austin Animal Center received any lost calicos near 78704 this month?"*
+- *"What day is trash pickup at 1610 Willow St?"*
+- *"When's the next 801 bus coming through Congress and Oltorf?"*
 
 Claude figures out which tool to call, queries the authoritative source live, and returns a `source_url` so you can verify.
 
 ---
 
-## Tools (41 live)
+## Tools (43 live)
 
 All tools are read-only, idempotent, and hit external providers (`readOnlyHint: true`, `idempotentHint: true`, `openWorldHint: true` in MCP annotations). The composed `austin_property_360` is the preferred entry point for any address-centric question.
 
@@ -137,6 +139,13 @@ All tools are read-only, idempotent, and hit external providers (`readOnlyHint: 
 | `austin_roadway_work_zones` | Active construction / closures from City of Austin Transportation & Public Works. |
 | `austin_animal_center` | Austin Animal Center intakes + outcomes — lost-pet search by found-address + breed, adoption availability. |
 | `austin_txdot_projects` | TxDOT highway construction / maintenance projects in the Austin district. Filter by highway, county, work type. |
+| `austin_trash_schedule` | Residential trash/recycling/compost collection day lookup by address. Trash + compost weekly; recycling biweekly (A/B week). |
+
+### Transit
+
+| Tool | What it does |
+|------|--------------|
+| `austin_next_bus` | Real-time CapMetro bus/rail: find a stop by name (`stop_search`), get live upcoming arrivals at a stop (`stop_id`), or see live vehicle positions for a route (`route`). Feed updates every 15 seconds. |
 
 ### Environment
 
@@ -201,6 +210,8 @@ Every tool returns data from an **official, authoritative source**. No third-par
 | Schools | Texas Education Agency + AISD |
 | Lake levels | Texas Water Development Board (Water Data for Texas) |
 | Weather | National Weather Service (api.weather.gov) |
+| Trash/recycling schedules | Austin Resource Recovery (data.austintexas.gov, Recycling Schedules dataset) |
+| Transit | CapMetro GTFS + GTFS-realtime, republished as JSON by the Texas DOT open data portal (data.texas.gov), updated every 15s |
 | Blog content | neuhausre.com WordPress REST API |
 | Austin local voices | RSS feeds from 8 independent Austin writers / community newsletters (Substack + WordPress) |
 | Geocoding | U.S. Census geocoder |
