@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] — 2026-07-19
+
+### Added
+
+- **`austin_trash_schedule`** — residential trash/recycling/compost collection
+  day by address. Source: Austin Resource Recovery's "Recycling Schedules"
+  dataset (data.austintexas.gov, 184,941 addresses). Address parsing splits
+  house number from street name, drops direction words and unit suffixes,
+  and does a fuzzy street-name match server-side.
+- **`austin_next_bus`** — real-time CapMetro bus/rail lookup. Three modes:
+  `stop_search` (find a stop by name), `stop_id` (live upcoming arrivals,
+  from GTFS-realtime Trip Updates), `route` (live vehicle positions, from
+  GTFS-realtime Vehicle Positions). New `lib/gtfs.js` (resolves + fetches
+  the CapMetro GTFS-realtime feeds -- these are Socrata "file" assets whose
+  blobId rotates on every refresh, confirmed live, so every fetch is a
+  metadata call then a blob call, no stable URL to hardcode) and
+  `lib/gtfs-static.js` (hand-rolled minimal ZIP reader + CSV parser over
+  Node's built-in `zlib` to pull just `stops.txt`/`routes.txt` out of
+  CapMetro's ~15MB static GTFS zip, without adding a zip dependency for two
+  small files out of eleven; 24h in-memory cache since the schedule rarely
+  changes). Both the ZIP extraction and the live feed parsing were verified
+  against the real data before being wired into the tool.
+
 ## [0.17.2] — 2026-07-19
 
 ### Added
