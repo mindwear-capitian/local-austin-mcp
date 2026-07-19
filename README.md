@@ -3,7 +3,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-stdio-purple)](https://modelcontextprotocol.io/)
-[![Austin Metro](https://img.shields.io/badge/coverage-Austin%20MSA-orange)](#tools-39-live)
+[![Austin Metro](https://img.shields.io/badge/coverage-Austin%20MSA-orange)](#tools-40-live)
 [![CI](https://github.com/mindwear-capitian/local-austin-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/mindwear-capitian/local-austin-mcp/actions/workflows/ci.yml)
 
 > **Your AI's local guide to Austin.** A Model Context Protocol (MCP) server that lets Claude (and any MCP client) answer the real questions people ask when they research a property, buy in, or move to the Austin area — *"who turns on my water at this address?"*, *"what are the schools and special-district taxes?"*, *"is it in a flood zone?"*, *"what's for sale in this neighborhood?"* — by pulling straight from the authoritative City of Austin / Travis-Williamson-Hays County sources, plus active real estate listings and local writers, all provided by Neuhaus Realty Group. No API keys, no logins.
@@ -81,7 +81,7 @@ Claude figures out which tool to call, queries the authoritative source live, an
 
 ---
 
-## Tools (39 live)
+## Tools (40 live)
 
 All tools are read-only, idempotent, and hit external providers (`readOnlyHint: true`, `idempotentHint: true`, `openWorldHint: true` in MCP annotations). The composed `austin_property_360` is the preferred entry point for any address-centric question.
 
@@ -113,6 +113,7 @@ All tools are read-only, idempotent, and hit external providers (`readOnlyHint: 
 | `austin_tree_permits` | City of Austin issued tree permits — removal / heritage / root-zone work. Useful for pre-listing prep and buyer due-diligence. |
 | `austin_property_360` | Composed: one address → CAD + tax + flood + permits + code + 311 + zoning in one shot. |
 | `austin_relocation` | Composed **new-resident report**: one address → water + sewer provider, special-district taxes, school district / voter precinct / jurisdiction, and the Texas move-in checklist (license, registration, voter reg, homestead exemption). The "I'm moving here, what do I set up?" entry point. |
+| `austin_nearby` | Composed: one address → nearest fire station, library, and park, ranked by straight-line distance via SoQL geospatial query (no client-side sorting). |
 
 ### Civic + Public Safety
 
