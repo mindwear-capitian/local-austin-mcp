@@ -15,7 +15,7 @@
 
 > 🚧 **This is an early project and I'd love help making it better.** I'm a broker who built this to give an AI a real, plain-English handle on Austin. It works, but there's a lot more Austin data worth wiring in and a couple of hard problems I haven't cracked. If you build with MCPs or know Austin/Texas civic data, pull requests and ideas are genuinely welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and the [good first issues](https://github.com/mindwear-capitian/local-austin-mcp/labels/good%20first%20issue).
 
-> 🏙️ **Building this for your own city?** This repo is the reference implementation for the `local-{city}-mcp` pattern. The spec, a working template, and the full list of cities built so far live at [local-city-mcp-template](https://github.com/mindwear-capitian/local-city-mcp-template) (start here) and [awesome-local-mcp](https://github.com/mindwear-capitian/awesome-local-mcp) (the list).
+> 🏙️ **Building this for your own city?** This repo is the reference implementation for the `local-{city}-mcp` pattern. The spec, a working template, and the full list of cities built so far all live at [local-city-mcp-template](https://github.com/mindwear-capitian/local-city-mcp-template) — start there.
 
 ---
 
