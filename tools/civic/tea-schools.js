@@ -204,6 +204,7 @@ function mergeRow(rating, ted) {
     instruction_type: ted?.instruction_type ?? null,
     magnet_status: ted?.magnet_status ?? null,
     superintendent: ted?.district_superintendent ?? null,
+    source_url: RATINGS_URL,
     sources: {
       ratings: RATINGS_URL,
       directory: ASKTED_URL,

@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.1] — 2026-07-19
+
+### Added
+
+- **`.github/workflows/contract.yml`** — `test:contract` (every tool called
+  through the real MCP layer against live upstreams) now runs in CI on a
+  daily schedule + manual dispatch, giving this repo a real green-in-CI
+  signal for the `local-city-mcp-template` standard's listing bar. Kept
+  separate from the required per-push `ci.yml` job deliberately -- gating
+  merges on ~15 third-party providers' live uptime would make PRs flaky for
+  reasons unrelated to the change being reviewed.
+- **`source_url`** field added (non-breaking, additive alongside existing
+  fields) to every single-record/search tool that didn't already have one:
+  `austin_health`, `austin_city_code`, `austin_tea_schools`,
+  `austin_active_listings`, `austin_listing_detail`,
+  `austin_listing_by_address`, `austin_neighborhood_lookup`,
+  `austin_search_blog`. Composed tools (`austin_property_360`,
+  `austin_relocation`, `austin_commute`) intentionally left alone -- their
+  nested sub-sections already cite sources individually, and forcing one
+  top-level `source_url` onto a multi-domain composite doesn't make sense
+  (see STANDARD.md's `openObjectShape` design).
+
+### Fixed
+
+- `package.json` `files` allowlist referenced `ATTRIBUTION.md`, deleted in
+  the v0.13.0 Apache-2.0 relicense and folded into `NOTICE` -- swapped for
+  `NOTICE`, which was missing from the list entirely. No effect today (this
+  package is GitHub-only, never `npm publish`ed), but was stale/wrong if
+  that ever changes.
+
 ## [0.17.0] — 2026-07-19
 
 ### Changed

@@ -30,6 +30,7 @@ export const austinListingDetail = {
     }
 
     const r = body?.data ?? {};
+    if (r.permalink_url) r.source_url = r.permalink_url;
     return {
       content: [
         { type: "text", text: formatListing(r) },

@@ -67,17 +67,17 @@ async function probe(check) {
   try {
     const res = await fetch(check.url, { ...(check.init || {}), signal: ac.signal });
     const latency_ms = Date.now() - started;
-    if (res.ok) return { source: check.source, status: "ok", http: res.status, latency_ms, last_error: null };
+    if (res.ok) return { source: check.source, status: "ok", http: res.status, latency_ms, last_error: null, source_url: check.url };
     if (res.status === 400 || res.status === 401 || res.status === 403) {
       // Endpoint reachable but rejected our probe — provider is UP.
-      return { source: check.source, status: "ok", http: res.status, latency_ms, last_error: null };
+      return { source: check.source, status: "ok", http: res.status, latency_ms, last_error: null, source_url: check.url };
     }
-    return { source: check.source, status: res.status >= 500 ? "down" : "degraded", http: res.status, latency_ms, last_error: `${res.status} ${res.statusText}` };
+    return { source: check.source, status: res.status >= 500 ? "down" : "degraded", http: res.status, latency_ms, last_error: `${res.status} ${res.statusText}`, source_url: check.url };
   } catch (err) {
     const latency_ms = Date.now() - started;
     const msg = String(err?.message || err);
     const kind = msg.includes("timeout") || msg.includes("aborted") ? "timeout" : "network";
-    return { source: check.source, status: kind === "timeout" ? "degraded" : "down", http: null, latency_ms, last_error: msg.slice(0, 160) };
+    return { source: check.source, status: kind === "timeout" ? "degraded" : "down", http: null, latency_ms, last_error: msg.slice(0, 160), source_url: check.url };
   } finally {
     clearTimeout(tid);
   }
@@ -107,6 +107,7 @@ export const austinHealth = {
         http: z.number().int().nullable(),
         latency_ms: z.number().int(),
         last_error: z.string().nullable(),
+        source_url: z.string(),
       })
     ),
   },
