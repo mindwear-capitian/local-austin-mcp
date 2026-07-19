@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file. Format
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] — 2026-07-19
+
+### Added
+
+- **`austin_nearby`** — composed tool: one address → nearest fire station,
+  public library, and park, ranked by straight-line distance. Reuses the same
+  three Socrata datasets as `austin_fire_stations` / `austin_libraries` /
+  `austin_parks` (zero new data sources) but queries them with SoQL's
+  `distance_in_meters()` geospatial function so the API returns true-nearest
+  results directly instead of pulling every row and sorting client-side.
+  Closes #4.
+
+### Fixed
+
+- **ArcGIS retry widened** — Travis County's PUC CCN water/sewer layer
+  (`austin_utility_providers`) intermittently 400s "Failed to execute query"
+  on valid requests (~50% of calls, confirmed live). `lib/arcgis.js` retry
+  now matches this error and retries twice (was: one retry, 5xx/network only).
+
 ## [0.14.0] — 2026-07-10
 
 ### Added
