@@ -42,6 +42,8 @@ export const austinNeighborhoodLookup = {
       }
       const n = body?.neighborhood ?? {};
       const sample = body?.sample_listings ?? [];
+      if (n.permalink_url) n.source_url = n.permalink_url;
+      for (const r of sample) if (r.permalink_url) r.source_url = r.permalink_url;
       const lines = [
         `# ${n.name || slug}`,
         "",
@@ -91,6 +93,8 @@ export const austinNeighborhoodLookup = {
         ],
       };
     }
+    for (const r of rows) if (r.permalink_url) r.source_url = r.permalink_url;
+
     const lines = [`# Neighborhood search: "${q}" -- ${rows.length} match${rows.length === 1 ? "" : "es"}`, ""];
     for (const r of rows) {
       lines.push(`## ${r.name}`);

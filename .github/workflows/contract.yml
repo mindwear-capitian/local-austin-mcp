@@ -1,0 +1,37 @@
+name: Contract test
+
+# Runs the full MCP contract test (calls every tool through the real MCP
+# protocol layer against LIVE upstream APIs: TCAD, WCAD, HCAD, Socrata,
+# FEMA, Census, NWS, VOW public, etc). Deliberately kept OUT of the
+# required per-push `ci.yml` job -- a transient outage on any of ~15
+# third-party providers would make every PR's required check flaky, and a
+# 41-tool sequential run against live networks is too slow to gate merges.
+# This runs on a schedule + manual dispatch instead, so there's still a
+# regularly-green (or not) CI signal for STANDARD.md's listing bar without
+# coupling merge-ability to third-party uptime.
+
+on:
+  schedule:
+    - cron: "17 13 * * *" # ~8:17am CT daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: test:contract (Node 20)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Contract test (every tool, real MCP layer, live upstreams)
+        run: npm run test:contract

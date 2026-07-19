@@ -51,11 +51,13 @@ export const austinSearchBlog = {
       };
     }
 
+    for (const p of posts) if (p.link) p.source_url = withUtm(p.link);
+
     const lines = [`# neuhausre.com blog search: "${q}" -- ${posts.length} result${posts.length === 1 ? "" : "s"}`, ""];
     for (const p of posts) {
       const title = stripHtml(p?.title?.rendered ?? "(untitled)");
       const excerpt = stripHtml(p?.excerpt?.rendered ?? "");
-      const url = withUtm(p.link);
+      const url = p.source_url ?? withUtm(p.link);
       const date = p.date ? String(p.date).slice(0, 10) : "";
       lines.push(`## ${title}`);
       if (date) lines.push(`*${date}*`);

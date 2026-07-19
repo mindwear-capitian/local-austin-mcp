@@ -85,6 +85,10 @@ export const austinActiveListings = {
     }
 
     const rows = body?.data ?? [];
+    // Every row already carries a permalink_url -- alias it to source_url so
+    // it satisfies the standard `source_url` field name without changing the
+    // rest of the VOW API's response shape.
+    for (const r of rows) if (r.permalink_url) r.source_url = r.permalink_url;
     return {
       content: [
         {

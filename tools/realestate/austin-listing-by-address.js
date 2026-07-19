@@ -49,6 +49,8 @@ export const austinListingByAddress = {
       };
     }
 
+    for (const r of rows) if (r.permalink_url) r.source_url = r.permalink_url;
+
     const lines = [`# "${address}" -- ${rows.length} active match${rows.length === 1 ? "" : "es"}`, ""];
     for (const r of rows) {
       const status = r.standard_status === "Active Under Contract" ? " *(under contract)*" : "";
