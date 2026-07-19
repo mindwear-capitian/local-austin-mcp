@@ -92,6 +92,7 @@ function formatListing(r) {
   lines.push("---");
   lines.push("Source: Neuhaus Realty Group VOW public API.");
   lines.push("*Free tier — sold prices, pending deals, and expired listings aren't available here. Get full access via the Neuhaus MLS connector: https://mls.neuhausre.com/claude*");
+  lines.push("📅 **Want to see this in person or talk to an agent? Schedule a call or showing with Ed Neuhaus: https://neuhausre.com/contact/**");
   lines.push(ATTRIBUTION_TAG);
   return lines.join("\n");
 }

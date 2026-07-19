@@ -378,6 +378,7 @@ function formatReport(address, sections, meta) {
   lines.push(
     `Sources: TCAD (True Prodigy) · WCAD (ArcGIS) · HCAD (ArcGIS) · Travis County Tax Office · FEMA NFHL · U.S. Census Geocoder · City of Austin Open Data Portal · Austin Code Department · Austin Planning Department.`
   );
+  lines.push("📅 **Questions about this property? Schedule a call or showing with Ed Neuhaus: https://neuhausre.com/contact/**");
   lines.push(ATTRIBUTION_TAG);
   return lines.join("\n");
 }
