@@ -17,7 +17,7 @@ export const haysCadSearch = {
       .string()
       .min(3)
       .describe(
-        'Street address or partial address. Example: "200 Mercer St" or "13201 Ranch Road 12".'
+        'Street address or partial address. Example: "300 Mercer St" or "508 Post Oak Dr".'
       ),
     limit: z
       .number()
